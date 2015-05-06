@@ -21,9 +21,11 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QCoreApplication
-from PyQt4.QtGui import QAction, QIcon, QMessageBox
+from PyQt4.QtGui import QAction, QIcon
 # Initialize Qt resources from file resources.py
 import resources_rc
+from import_feature import ImportFeature
+from fusion import Fusion
 import os.path
 
 
@@ -121,13 +123,26 @@ class MappingTools:
 
     def initGui(self):
         '''Create the menu entries and toolbar icons inside the QGIS GUI.'''
-        icon_path = ':/plugins/MappingTools/icon.png'
-        self.add_action(
-            icon_path,
-            text='Mapping Tools',
-            callback=self.run,
+        import_feature_icon_path = ':/plugins/MappingTools/import_feature_icon.png'
+        import_feature_action = self.add_action(
+            import_feature_icon_path,
+            text='Import Feature',
+            callback=self.importFeature,
+            add_to_menu=False,
             parent=self.iface.mainWindow())
-
+        self.fusionMapTool = Fusion(self.iface.mapCanvas())
+        
+        fusion_icon_path = ':/plugins/MappingTools/fusion_icon.png'
+        fusion_action = self.add_action(
+            fusion_icon_path,
+            text='Fusion',
+            callback=self.fusion,
+            add_to_menu=False,
+            parent=self.iface.mainWindow())
+        fusion_action.setCheckable(True)
+        self.fusionMapTool.setAction(fusion_action)
+        self.fusionMapTool.activated.connect(self.keepPressed)
+        self.fusionMapTool.deactivated.connect(self.unCheck)
 
     def unload(self):
         '''Removes the plugin menu item and icon from QGIS GUI.'''
@@ -138,12 +153,19 @@ class MappingTools:
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
         del self.toolbar
+        # Unset the map tool in case it's set
+        self.iface.mapCanvas().unsetMapTool(self.fusionMapTool)
 
-    def popup(self, msg):
-        msgBox = QMessageBox()
-        msgBox.setText(msg)
-        msgBox.exec_()
+    def keepPressed(self):
+        self.actions[1].setChecked(True)
 
-    def run(self):
+    def unCheck(self):
+        self.actions[1].setChecked(False)
+
+    def importFeature(self):
         '''Run method that performs all the real work'''
-        self.popup('run plugin')
+        ImportFeature(self.iface, sourceLayer= '', destinationLayer='')
+
+    def fusion(self):
+        '''Run method that performs all the real work'''
+        self.iface.mapCanvas().setMapTool(self.fusionMapTool)

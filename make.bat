@@ -4,7 +4,12 @@ set QGISDIR=%UserProfile%\.qgis2\python\plugins
 
 set PLUGINNAME=MappingTools
 
-set PY_FILES=__init__.py mapping_tools.py
+set PY_FILES= ^
+	mapping_tools.py ^
+	import_feature.py ^
+	fusion.py ^
+	common.py ^
+	__init__.py
 
 set UI_FILES=
 

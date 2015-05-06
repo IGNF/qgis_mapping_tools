@@ -34,21 +34,16 @@ LOCALES =
 #LRELEASE = lrelease
 #LRELEASE = lrelease-qt4
 
-
-# translation
-SOURCES = \
-	__init__.py \
-	mapping_tools.py \
-	mapping_tools_dialog.py
-
 PLUGINNAME = MappingTools
 
 PY_FILES = \
 	mapping_tools.py \
-	mapping_tools_dialog.py \
+	import_feature.py \
+	fusion.py \
+	common.py \
 	__init__.py
 
-UI_FILES = mapping_tools_dialog_base.ui
+UI_FILES = 
 
 EXTRAS = icon.png metadata.txt
 
