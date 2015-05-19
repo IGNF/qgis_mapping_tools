@@ -41,7 +41,8 @@ class Fusion(QgsMapTool):
         #for f in self.featuresDict.values():
         #    self.index.insertFeature(f)
         
-        currentLayer.featureAdded.connect( self.logFeatureAdded )
+        currentLayer.featureAdded.connect( self.featureAddedEvent )
+        currentLayer.featureDeleted.connect( self.featureDeletedEvent )
 
     def canvasPressEvent(self, event):
         layer = self.canvas.currentLayer()
@@ -108,9 +109,6 @@ class Fusion(QgsMapTool):
                 #self.featuresDict[fid] = f
                 for fId in featuresToFusionList:
                     #f = self.featuresDict[fId]
-                    req = QgsFeatureRequest(fId)
-                    for f in layer.getFeatures(req):
-                        successOnDel = self.index.deleteFeature(f)
                         #if successOnDel:
                         #    del self.featuresDict[fId]
                         layer.deleteFeature(fId)
@@ -126,8 +124,17 @@ class Fusion(QgsMapTool):
             raise 
             
 
-    def logFeatureAdded(self, featAdd):
-        print str(featAdd)
+    def featureAddedEvent(self, feature):
+        print str(feature)
+        req = QgsFeatureRequest(feature)
+        for f in self.canvas.currentLayer().getFeatures(req):
+            self.index.insertFeature({feature: f}.values()[0])
+
+    def featureDeletedEvent(self, feature):
+        print str(feature)
+        req = QgsFeatureRequest(feature)
+        for f in self.canvas.currentLayer().getFeatures(req):
+            self.index.deleteFeature(f)
 
     def itemsReset(self):
         self.pathPointsList = []
