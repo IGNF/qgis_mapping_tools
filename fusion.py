@@ -46,7 +46,7 @@ class Fusion(QgsMapTool):
     def canvasPressEvent(self, event):
         layer = self.canvas.currentLayer()
         layer.beginEditCommand("Features fusion")
-        self.newFeat = QgsFeature()
+        self.newFeat = None
         self.r = QgsRubberBand(self.canvas, False)
         self.r.setColor(QColor(255, 71, 25))
         self.r.setWidth(0.2)
@@ -76,48 +76,55 @@ class Fusion(QgsMapTool):
 
     def canvasReleaseEvent(self, event):
         ## create a feature
-        ft = QgsFeature()
-        mousePathGeom = QgsGeometry.fromPolyline(self.pathPointsList)
-        layer = self.canvas.currentLayer()
-        
-        if not mousePathGeom == None:
-            ft.setGeometry(mousePathGeom)
-            if not layer or layer.type() != QgsMapLayer.VectorLayer or layer.featureCount() == 0:
-                self.itemsReset()
-                return
-            layer.removeSelection()
-
-            featuresToFusionList = [self.newFeat.id()]
-
-            selectedFeatureBbox = ft.geometry().boundingBox()
-            intersectFeatIds = self.index.intersects(selectedFeatureBbox)
-            for fId in intersectFeatIds:
-                #f = self.featuresDict[fId]
-                req = QgsFeatureRequest(fId)
-                for f in layer.getFeatures(req):
-                    if f.geometry().intersects(ft.geometry()):
-                        if fId not in featuresToFusionList:
-                            self.newFeat.setGeometry(self.newFeat.geometry().combine(f.geometry()))
-                            featuresToFusionList.append(f.id())
-            layer.addFeature(self.newFeat)
-            # Get newly added feature
-            f = self.newFeat
-            fid = f.id()
-            self.index.insertFeature({fid: f}.values()[0])
-            #self.featuresDict[fid] = f
-            for fId in featuresToFusionList:
-                #f = self.featuresDict[fId]
-                req = QgsFeatureRequest(fId)
-                for f in layer.getFeatures(req):
-                    successOnDel = self.index.deleteFeature(f)
-                    #if successOnDel:
-                    #    del self.featuresDict[fId]
-                    layer.deleteFeature(fId)
-
-            layer.setSelectedFeatures([])
+        try:
+            ft = QgsFeature()
+            mousePathGeom = QgsGeometry.fromPolyline(self.pathPointsList)
+            layer = self.canvas.currentLayer()
             
-        self.itemsReset()
-        layer.endEditCommand()
+            if not mousePathGeom == None:
+                ft.setGeometry(mousePathGeom)
+                if not layer or layer.type() != QgsMapLayer.VectorLayer or layer.featureCount() == 0:
+                    self.itemsReset()
+                    return
+                layer.removeSelection()
+    
+                featuresToFusionList = [self.newFeat.id()]
+    
+                selectedFeatureBbox = ft.geometry().boundingBox()
+                intersectFeatIds = self.index.intersects(selectedFeatureBbox)
+                for fId in intersectFeatIds:
+                    #f = self.featuresDict[fId]
+                    req = QgsFeatureRequest(fId)
+                    for f in layer.getFeatures(req):
+                        if f.geometry().intersects(ft.geometry()):
+                            if fId not in featuresToFusionList:
+                                self.newFeat.setGeometry(self.newFeat.geometry().combine(f.geometry()))
+                                featuresToFusionList.append(f.id())
+                layer.addFeature(self.newFeat)
+                # Get newly added feature
+                f = self.newFeat
+                fid = f.id()
+                self.index.insertFeature({fid: f}.values()[0])
+                #self.featuresDict[fid] = f
+                for fId in featuresToFusionList:
+                    #f = self.featuresDict[fId]
+                    req = QgsFeatureRequest(fId)
+                    for f in layer.getFeatures(req):
+                        successOnDel = self.index.deleteFeature(f)
+                        #if successOnDel:
+                        #    del self.featuresDict[fId]
+                        layer.deleteFeature(fId)
+    
+                layer.setSelectedFeatures([])
+                
+            self.itemsReset()
+            layer.endEditCommand()
+            
+        except:
+            self.itemsReset()
+            layer.endEditCommand()
+            raise 
+            
 
     def logFeatureAdded(self, featAdd):
         print str(featAdd)
