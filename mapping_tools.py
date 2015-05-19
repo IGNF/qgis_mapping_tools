@@ -22,6 +22,8 @@
 """
 from PyQt4.QtCore import QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
+from qgis.core import QgsMapLayerRegistry, QgsMapLayer
+
 # Initialize Qt resources from file resources.py
 import resources_rc
 from import_feature import ImportFeature
@@ -48,7 +50,8 @@ class MappingTools:
         self.menu = 'Mapping Tools'
         self.toolbar = self.iface.addToolBar(u'MappingTools')
         self.toolbar.setObjectName(u'MappingTools')
-
+        self.iface.mapCanvas().currentLayerChanged.connect(self.layerChangedEvent)
+        
     def add_action(
         self,
         icon_path,
@@ -130,13 +133,14 @@ class MappingTools:
             callback=self.importFeature,
             add_to_menu=False,
             parent=self.iface.mainWindow())
-        self.fusionMapTool = Fusion(self.iface.mapCanvas())
         
+        self.fusionMapTool = Fusion(self.iface.mapCanvas())
         fusion_icon_path = ':/plugins/MappingTools/fusion_icon.png'
         fusion_action = self.add_action(
             fusion_icon_path,
             text='Fusion',
             callback=self.fusion,
+            enabled_flag=False,
             add_to_menu=False,
             parent=self.iface.mainWindow())
         fusion_action.setCheckable(True)
@@ -169,3 +173,19 @@ class MappingTools:
     def fusion(self):
         '''Run method that performs all the real work'''
         self.iface.mapCanvas().setMapTool(self.fusionMapTool)
+        
+    def layerChangedEvent(self, currentLayer):
+        if not currentLayer:
+            return
+        if currentLayer.isEditable():
+            self.actions[1].setEnabled(True)
+        else:
+            self.actions[1].setEnabled(False)
+        currentLayer.editingStarted.connect(self.editingStartedEvent)
+        currentLayer.editingStopped.connect(self.editingStoppedEvent)
+        
+    def editingStartedEvent(self):
+        self.actions[1].setEnabled(True)
+        
+    def editingStoppedEvent(self):
+        self.actions[1].setEnabled(False)
