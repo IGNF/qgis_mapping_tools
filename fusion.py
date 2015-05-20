@@ -19,8 +19,7 @@ class Fusion(QgsMapTool):
         self.canvas.setCursor(self.cursor)
         self.canvas.setMouseTracking(False)
         self.activated.emit()
-        if self.canvas.currentLayer():
-            self.updateSpIdx(self.canvas.currentLayer())
+        self.updateSpIdx(self.canvas.currentLayer())
         self.canvas.currentLayerChanged.connect(self.updateSpIdx)
         
     def deactivate(self):
@@ -131,14 +130,16 @@ class Fusion(QgsMapTool):
             raise 
 
     def featureAddedEvent(self, feature):
-        req = QgsFeatureRequest(feature)
-        for f in self.canvas.currentLayer().getFeatures(req):
-            self.index.insertFeature({feature: f}.values()[0])
+        if self.canvas.currentLayer():
+            req = QgsFeatureRequest(feature)
+            for f in self.canvas.currentLayer().getFeatures(req):
+                self.index.insertFeature({feature: f}.values()[0])
 
     def featureDeletedEvent(self, feature):
-        req = QgsFeatureRequest(feature)
-        for f in self.canvas.currentLayer().getFeatures(req):
-            self.index.deleteFeature(f)
+        if self.canvas.currentLayer():
+            req = QgsFeatureRequest(feature)
+            for f in self.canvas.currentLayer().getFeatures(req):
+                self.index.deleteFeature(f)
 
     def itemsReset(self):
         self.pathPointsList = []
