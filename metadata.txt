@@ -8,7 +8,7 @@
 
 [general]
 name=Mapping Tools
-qgisMinimumVersion=2.0
+qgisMinimumVersion=2.8
 description=Data acquisition tools from vector segmentation layers
 version=0.1
 author=IGN
