@@ -29,6 +29,7 @@ import resources_rc
 from import_feature import ImportFeature
 from fusion import Fusion
 import os.path
+from qgis._core import QgsVectorLayer
 
 
 class MappingTools:
@@ -181,8 +182,10 @@ class MappingTools:
             self.actions[1].setEnabled(True)
         else:
             self.actions[1].setEnabled(False)
-        currentLayer.editingStarted.connect(self.editingStartedEvent)
-        currentLayer.editingStopped.connect(self.editingStoppedEvent)
+        
+        if type(currentLayer) == QgsVectorLayer:     
+            currentLayer.editingStarted.connect(self.editingStartedEvent)
+            currentLayer.editingStopped.connect(self.editingStoppedEvent)
         
     def editingStartedEvent(self):
         self.actions[1].setEnabled(True)
