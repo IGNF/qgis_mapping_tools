@@ -51,8 +51,8 @@ class MappingTools:
         self.menu = 'Mapping Tools'
         self.toolbar = self.iface.addToolBar(u'MappingTools')
         self.toolbar.setObjectName(u'MappingTools')
-        self.iface.mapCanvas().currentLayerChanged.connect(self.layerChangedEvent)
-        
+        self.oldMapTool = None
+
     def add_action(
         self,
         icon_path,
@@ -148,6 +148,9 @@ class MappingTools:
         self.fusionMapTool.setAction(fusion_action)
         self.fusionMapTool.activated.connect(self.keepPressed)
         self.fusionMapTool.deactivated.connect(self.unCheck)
+        
+        self.layerChangedEvent(self.iface.mapCanvas().currentLayer())
+        self.iface.mapCanvas().currentLayerChanged.connect(self.layerChangedEvent)
 
     def unload(self):
         '''Removes the plugin menu item and icon from QGIS GUI.'''
@@ -168,11 +171,10 @@ class MappingTools:
         self.actions[1].setChecked(False)
 
     def importFeature(self):
-        '''Run method that performs all the real work'''
         ImportFeature(self.iface, sourceLayer= '', destinationLayer='')
 
     def fusion(self):
-        '''Run method that performs all the real work'''
+        self.oldMapTool = self.iface.mapCanvas().mapTool()
         self.iface.mapCanvas().setMapTool(self.fusionMapTool)
         
     def layerChangedEvent(self, currentLayer):
@@ -182,6 +184,9 @@ class MappingTools:
             self.actions[1].setEnabled(True)
         else:
             self.actions[1].setEnabled(False)
+            self.iface.mapCanvas().unsetMapTool(self.fusionMapTool)
+            if not self.oldMapTool == None:
+                self.iface.mapCanvas().setMapTool(self.oldMapTool)
         
         if type(currentLayer) == QgsVectorLayer:     
             currentLayer.editingStarted.connect(self.editingStartedEvent)
@@ -192,3 +197,6 @@ class MappingTools:
         
     def editingStoppedEvent(self):
         self.actions[1].setEnabled(False)
+        self.iface.mapCanvas().unsetMapTool(self.fusionMapTool)
+        if not self.oldMapTool == None:
+            self.iface.mapCanvas().setMapTool(self.oldMapTool)
