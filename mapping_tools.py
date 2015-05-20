@@ -50,7 +50,8 @@ class MappingTools:
         self.menu = 'Mapping Tools'
         self.toolbar = self.iface.addToolBar(u'MappingTools')
         self.toolbar.setObjectName(u'MappingTools')
-        
+        self.oldMapTool = None
+
     def add_action(
         self,
         icon_path,
@@ -172,6 +173,7 @@ class MappingTools:
         ImportFeature(self.iface, sourceLayer= '', destinationLayer='')
 
     def fusion(self):
+        self.oldMapTool = self.iface.mapCanvas().mapTool()
         self.iface.mapCanvas().setMapTool(self.fusionMapTool)
         
     def layerChangedEvent(self, currentLayer):
@@ -182,6 +184,8 @@ class MappingTools:
         else:
             self.actions[1].setEnabled(False)
             self.iface.mapCanvas().unsetMapTool(self.fusionMapTool)
+            if not self.oldMapTool == None:
+                self.iface.mapCanvas().setMapTool(self.oldMapTool)
         currentLayer.editingStarted.connect(self.editingStartedEvent)
         currentLayer.editingStopped.connect(self.editingStoppedEvent)
         
@@ -191,3 +195,5 @@ class MappingTools:
     def editingStoppedEvent(self):
         self.actions[1].setEnabled(False)
         self.iface.mapCanvas().unsetMapTool(self.fusionMapTool)
+        if not self.oldMapTool == None:
+            self.iface.mapCanvas().setMapTool(self.oldMapTool)
