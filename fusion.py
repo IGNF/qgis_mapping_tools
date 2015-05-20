@@ -28,10 +28,12 @@ class Fusion(QgsMapTool):
         self.canvas.setMouseTracking(True)
         self.deactivated.emit()
         try:
-            self.canvas.currentLayer().featureAdded.disconnect( self.featureAddedEvent )
-            self.canvas.currentLayer().featureDeleted.disconnect( self.featureDeletedEvent )
+            if self.canvas.currentLayer():
+                self.canvas.currentLayer().featureAdded.disconnect( self.featureAddedEvent )
+                self.canvas.currentLayer().featureDeleted.disconnect( self.featureDeletedEvent )
         except:
             pass
+        
         self.canvas.currentLayerChanged.disconnect(self.updateSpIdx)
 
     def updateSpIdx(self, currentLayer):
