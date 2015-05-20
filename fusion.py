@@ -61,25 +61,26 @@ class Fusion(QgsMapTool):
         if not layer or layer.type() != QgsMapLayer.VectorLayer or layer.featureCount() == 0:
             self.itemsReset()
             return
-        
-        #selectedFeatureBbox = QgsGeometry.fromPoint(QgsPoint(point[0], point[1])).boundingBox()
-        intersectFeatIds = self.index.nearestNeighbor(QgsPoint(point[0], point[1]),0)
-        for fId in intersectFeatIds:
-            #f = self.featuresDict[fId]
-            req = QgsFeatureRequest(fId)
-            for f in layer.getFeatures(req):
-                if f.geometry().intersects(QgsGeometry.fromPoint(QgsPoint(point[0], point[1]))):
-                    self.newFeat = f
 
     def canvasMoveEvent(self, event):
+        layer = self.canvas.currentLayer()
         x = event.pos().x()
         y = event.pos().y()
         point = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
+        #selectedFeatureBbox = QgsGeometry.fromPoint(QgsPoint(point[0], point[1])).boundingBox()
+        if self.newFeat == None:
+            intersectFeatIds = self.index.nearestNeighbor(QgsPoint(point[0], point[1]),0)
+            for fId in intersectFeatIds:
+                #f = self.featuresDict[fId]
+                req = QgsFeatureRequest(fId)
+                for f in layer.getFeatures(req):
+                    if f.geometry().intersects(QgsGeometry.fromPoint(QgsPoint(point[0], point[1]))):
+                        self.newFeat = f
         self.pathPointsList.append(QgsPoint(point[0], point[1]))
         self.r.setToGeometry(QgsGeometry.fromPolyline(self.pathPointsList), None)
 
     def canvasReleaseEvent(self, event):
-        ## create a feature
+        # create a feature
         try:
             ft = QgsFeature()
             mousePathGeom = QgsGeometry.fromPolyline(self.pathPointsList)
@@ -87,8 +88,9 @@ class Fusion(QgsMapTool):
             
             if not mousePathGeom == None:
                 ft.setGeometry(mousePathGeom)
-                if not layer or layer.type() != QgsMapLayer.VectorLayer or layer.featureCount() == 0:
+                if not layer or layer.type() != QgsMapLayer.VectorLayer or layer.featureCount() == 0 or self.newFeat == None:
                     self.itemsReset()
+                    layer.destroyEditCommand()
                     return
                 layer.removeSelection()
     
@@ -123,7 +125,7 @@ class Fusion(QgsMapTool):
             
         except:
             self.itemsReset()
-            layer.endEditCommand()
+            layer.destroyEditCommand()
             raise 
 
     def featureAddedEvent(self, feature):
