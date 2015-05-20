@@ -10,14 +10,12 @@ class Fusion(QgsMapTool):
         self.canvas = canvas
         self.cursor = QCursor(Qt.CrossCursor)
         self.pathPointsList = []
-        self.activatedFlag = False
         #self.canvas.mapToolSet.connect(self.changeMapTool)
     #def changeMapTool(self, newTool):
     #    print newTool
 
     def activate(self):
         print 'fusion activate'
-        self.activatedFlag = True
         self.canvas.setCursor(self.cursor)
         self.canvas.setMouseTracking(False)
         self.activated.emit()
@@ -29,10 +27,15 @@ class Fusion(QgsMapTool):
         print 'fusion deactivate'
         self.canvas.setMouseTracking(True)
         self.deactivated.emit()
-        self.activatedFlag = False
+        try:
+            self.canvas.currentLayer().featureAdded.disconnect( self.featureAddedEvent )
+            self.canvas.currentLayer().featureDeleted.disconnect( self.featureDeletedEvent )
+        except:
+            pass
+        self.canvas.currentLayerChanged.disconnect(self.updateSpIdx)
 
     def updateSpIdx(self, currentLayer):
-        if self.activatedFlag == False or currentLayer == None:
+        if currentLayer == None:
             return
         # Create a dictionary of all features
         #self.featuresDict = {f.id(): f for f in currentLayer.getFeatures()}
@@ -122,16 +125,13 @@ class Fusion(QgsMapTool):
             self.itemsReset()
             layer.endEditCommand()
             raise 
-            
 
     def featureAddedEvent(self, feature):
-        print str(feature)
         req = QgsFeatureRequest(feature)
         for f in self.canvas.currentLayer().getFeatures(req):
             self.index.insertFeature({feature: f}.values()[0])
 
     def featureDeletedEvent(self, feature):
-        print str(feature)
         req = QgsFeatureRequest(feature)
         for f in self.canvas.currentLayer().getFeatures(req):
             self.index.deleteFeature(f)
