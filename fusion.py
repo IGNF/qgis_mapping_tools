@@ -73,10 +73,11 @@ class Fusion(QgsMapTool):
             intersectFeatIds = self.index.nearestNeighbor(QgsPoint(point[0], point[1]),0)
             for fId in intersectFeatIds:
                 #f = self.featuresDict[fId]
-                req = QgsFeatureRequest(fId)
-                for f in layer.getFeatures(req):
-                    if f.geometry().intersects(QgsGeometry.fromPoint(QgsPoint(point[0], point[1]))):
-                        self.newFeat = f
+                if fId >= 0:
+                    req = QgsFeatureRequest(fId)            
+                    for f in layer.getFeatures(req):
+                        if f.geometry().intersects(QgsGeometry.fromPoint(QgsPoint(point[0], point[1]))):
+                            self.newFeat = f
         self.pathPointsList.append(QgsPoint(point[0], point[1]))
         self.r.setToGeometry(QgsGeometry.fromPolyline(self.pathPointsList), None)
 
@@ -101,12 +102,13 @@ class Fusion(QgsMapTool):
                 intersectFeatIds = self.index.intersects(selectedFeatureBbox)
                 for fId in intersectFeatIds:
                     #f = self.featuresDict[fId]
-                    req = QgsFeatureRequest(fId)
-                    for f in layer.getFeatures(req):
-                        if f.geometry().intersects(ft.geometry()):
-                            if fId not in featuresToFusionList:
-                                self.newFeat.setGeometry(self.newFeat.geometry().combine(f.geometry()))
-                                featuresToFusionList.append(f.id())
+                    if fId >= 0:
+                        req = QgsFeatureRequest(fId)
+                        for f in layer.getFeatures(req):
+                            if f.geometry().intersects(ft.geometry()):
+                                if fId not in featuresToFusionList:
+                                    self.newFeat.setGeometry(self.newFeat.geometry().combine(f.geometry()))
+                                    featuresToFusionList.append(f.id())
                 layer.addFeature(self.newFeat)
                 # Get newly added feature
                 f = self.newFeat
@@ -130,13 +132,13 @@ class Fusion(QgsMapTool):
             raise 
 
     def featureAddedEvent(self, feature):
-        if self.canvas.currentLayer():
+        if self.canvas.currentLayer() and feature >= 0:
             req = QgsFeatureRequest(feature)
             for f in self.canvas.currentLayer().getFeatures(req):
                 self.index.insertFeature({feature: f}.values()[0])
 
     def featureDeletedEvent(self, feature):
-        if self.canvas.currentLayer():
+        if self.canvas.currentLayer() and feature >= 0:
             req = QgsFeatureRequest(feature)
             for f in self.canvas.currentLayer().getFeatures(req):
                 self.index.deleteFeature(f)
