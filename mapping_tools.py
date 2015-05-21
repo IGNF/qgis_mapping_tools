@@ -47,7 +47,7 @@ class MappingTools:
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
         # Declare instance attributes
-        self.actions = []
+        self.actions = {}
         self.menu = 'Mapping Tools'
         self.toolbar = self.iface.addToolBar(u'MappingTools')
         self.toolbar.setObjectName(u'MappingTools')
@@ -55,6 +55,7 @@ class MappingTools:
 
     def add_action(
         self,
+        id,
         icon_path,
         text,
         callback,
@@ -121,7 +122,7 @@ class MappingTools:
                 self.menu,
                 action)
 
-        self.actions.append(action)
+        self.actions[id] = action
 
         return action
 
@@ -129,6 +130,7 @@ class MappingTools:
         '''Create the menu entries and toolbar icons inside the QGIS GUI.'''
         import_feature_icon_path = ':/plugins/MappingTools/import_feature_icon.png'
         import_feature_action = self.add_action(
+            'import_feature_action',
             import_feature_icon_path,
             text='Import Feature',
             callback=self.importFeature,
@@ -138,6 +140,7 @@ class MappingTools:
         self.fusionMapTool = Fusion(self.iface.mapCanvas())
         fusion_icon_path = ':/plugins/MappingTools/fusion_icon.png'
         fusion_action = self.add_action(
+            'fusion_action',
             fusion_icon_path,
             text='Fusion',
             callback=self.fusion,
@@ -154,7 +157,7 @@ class MappingTools:
 
     def unload(self):
         '''Removes the plugin menu item and icon from QGIS GUI.'''
-        for action in self.actions:
+        for action in self.actions.values():
             self.iface.removePluginMenu(
                 'Mapping Tools',
                 action)
@@ -165,10 +168,10 @@ class MappingTools:
         self.iface.mapCanvas().unsetMapTool(self.fusionMapTool)
 
     def keepPressed(self):
-        self.actions[1].setChecked(True)
+        self.actions['fusion_action'].setChecked(True)
 
     def unCheck(self):
-        self.actions[1].setChecked(False)
+        self.actions['fusion_action'].setChecked(False)
 
     def importFeature(self):
         ImportFeature(self.iface, sourceLayer= '', destinationLayer='')
@@ -181,9 +184,9 @@ class MappingTools:
         if not currentLayer:
             return
         if currentLayer.isEditable():
-            self.actions[1].setEnabled(True)
+            self.actions['fusion_action'].setEnabled(True)
         else:
-            self.actions[1].setEnabled(False)
+            self.actions['fusion_action'].setEnabled(False)
             self.iface.mapCanvas().unsetMapTool(self.fusionMapTool)
             if not self.oldMapTool == None:
                 self.iface.mapCanvas().setMapTool(self.oldMapTool)
@@ -193,10 +196,10 @@ class MappingTools:
             currentLayer.editingStopped.connect(self.editingStoppedEvent)
         
     def editingStartedEvent(self):
-        self.actions[1].setEnabled(True)
+        self.actions['fusion_action'].setEnabled(True)
         
     def editingStoppedEvent(self):
-        self.actions[1].setEnabled(False)
+        self.actions['fusion_action'].setEnabled(False)
         self.iface.mapCanvas().unsetMapTool(self.fusionMapTool)
         if not self.oldMapTool == None:
             self.iface.mapCanvas().setMapTool(self.oldMapTool)
