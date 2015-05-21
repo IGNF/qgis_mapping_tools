@@ -74,7 +74,7 @@ compile: $(COMPILED_RESOURCE_FILES)
 %.qm : %.ts
 	$(LRELEASE) $<
 
-test: compile transcompile
+test: compile 
 	@echo
 	@echo "----------------------"
 	@echo "Regression Test Suite"
@@ -177,7 +177,8 @@ clean:
 	@echo "------------------------------------"
 	@echo "Removing uic and rcc generated files"
 	@echo "------------------------------------"
-	rm $(COMPILED_UI_FILES) $(COMPILED_RESOURCE_FILES)
+	#rm $(COMPILED_UI_FILES) $(COMPILED_RESOURCE_FILES)
+	rm  *.pyc test/src/*.pyc
 
 
 
