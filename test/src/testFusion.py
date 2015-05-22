@@ -31,7 +31,9 @@ class TestFusion(unittest.TestCase):
 
     def test_fonctionnel(self):
         
-        QgsApplication.setPrefixPath("/usr", True)  
+        prefix_path = os.environ['QGIS_PREFIX_PATH']
+        print "Env QGIS_PREFIX_PATH : {}".format(prefix_path)
+        QgsApplication.setPrefixPath(prefix_path, True)  
         QgsApplication.initQgis()
         
         iface = DummyInterface()
