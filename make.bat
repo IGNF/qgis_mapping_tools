@@ -1,5 +1,14 @@
 @ECHO OFF
 
+call c:\OSGeo4W\bin\o4w_env.bat
+
+set PYTHONPATH=C:\OSGeo4W\apps\qgis\python;%PYTHONPATH%
+set PATH=C:\OSGeo4W\bin;%PATH%
+set PATH=C:\OSGeo4W\apps\qgis\bin;%PATH%
+set PYTHONPATH=C:\OSGeo4W\apps\qgis\python\plugins;%PYTHONPATH%
+set PYTHONPATH=%USERPROFILE%\.qgis2\python\plugins;%PYTHONPATH%
+set PYTHONPATH=./;%PYTHONPATH%
+set QGIS_PREFIX_PATH=%OSGEO4W_ROOT:\=/%/apps/qgis
 set QGISDIR=%UserProfile%\.qgis2\python\plugins
 
 set PLUGINNAME=MappingTools
@@ -28,7 +37,7 @@ if "%1" == "help" (
 	echo.
 	echo.  compile       to compile resources.
 	echo.  deploy        to compile and deploy plugin into qgis plugins directory.
-	echo.  test          to checkout test dataset ^(git cmd required^) and launch QGIS.
+	echo.  test          to lauch tests.
 	echo.  dclean        to remove compiled python files of qgis plugins directory.
 	echo.  derase        to remove deployed plugin.
 	echo.  clean         to remove rcc generated file.
@@ -77,95 +86,12 @@ if "%1" == "deploy" (
 
 if "%1" == "test" (
 	:test
-	if "%2" == "clean" (
-		goto testclean
-	) else if "%2" == "dirty" (
-		goto testdirty
-	) else if "%2" == "big" (
-		goto testbig
-	) else if "%2" == "fb" (
-		goto testfb
-	) else if "%2" == "topo" (
-		goto testtopo
-	) else if "%2" == "sqlite" (
-		goto testsqlite
-	) else (
-		echo.
-		echo.Please use `make test ^<target^>` where ^<target^> is one of
-		echo.
-		echo.  clean       to test with coherent datasets.
-		echo.  dirty       to test with incoherent datasets.
-		echo.  big         to test on a big dataset.
-		echo.  fb          to test with "fond blanc".
-		echo.  topo        to test topology on a very simple dataset.
-		echo.  sqlite      to test with sqlite format layers.
-		goto end
-	)
-	:testclean
-	tasklist /fi "imagename eq qgis-bin.exe" |find ":" > nul
-	if errorlevel 1 taskkill /f /im qgis-bin.exe >nul
-	git checkout ..\test-data
-	call make deploy
 	echo.
-	echo.------------------------------------------
-	echo.Launching QGIS plugin.
-	echo.------------------------------------------
-	..\test-data\test-4-orthos-clean-toporules.qgs
-	goto end
-	:testdirty
-	tasklist /fi "imagename eq qgis-bin.exe" |find ":" > nul
-	if errorlevel 1 taskkill /f /im qgis-bin.exe >nul
-	git checkout ..\test-data
-	call make deploy
-	echo.
-	echo.------------------------------------------
-	echo.Launching QGIS plugin.
-	echo.------------------------------------------
-	..\test-data\test-4-orthos-toporules.qgs
-	goto end
-	:testbig
-	tasklist /fi "imagename eq qgis-bin.exe" |find ":" > nul
-	if errorlevel 1 taskkill /f /im qgis-bin.exe >nul
-	git checkout ..\test-data
-	call make deploy
-	echo.
-	echo.------------------------------------------
-	echo.Launching QGIS plugin.
-	echo.------------------------------------------
-	..\test-data\test-medium-clean.qgs
-	goto end
-	:testfb
-	tasklist /fi "imagename eq qgis-bin.exe" |find ":" > nul
-	if errorlevel 1 taskkill /f /im qgis-bin.exe >nul
-	git checkout ..\test-data
-	call make deploy
-	echo.
-	echo.------------------------------------------
-	echo.Launching QGIS plugin.
-	echo.------------------------------------------
-	..\test-data\test-cher.qgs
-	goto end
-	:testtopo
-	tasklist /fi "imagename eq qgis-bin.exe" |find ":" > nul
-	if errorlevel 1 taskkill /f /im qgis-bin.exe >nul
-	git checkout ..\test-data
-	call make deploy
-	echo.
-	echo.------------------------------------------
-	echo.Launching QGIS plugin.
-	echo.------------------------------------------
-	..\test-data\test-topo.qgs
-	goto end
-	:testsqlite
-	tasklist /fi "imagename eq qgis-bin.exe" |find ":" > nul
-	if errorlevel 1 taskkill /f /im qgis-bin.exe >nul
-	git checkout ..\test-data
-	call make deploy
-	echo.
-	echo.------------------------------------------
-	echo.Launching QGIS plugin.
-	echo.------------------------------------------
-	..\test-data\test-std-echg\sqlite.qgs
+	echo.-----------------------------------
+	echo.Launching tests.
+	echo.-----------------------------------
+	
+	python test\src\testFusion.py
 	goto end
 )
 
@@ -195,18 +121,7 @@ if "%1" == "clean" (
 	echo.Removing rcc generated files.
 	echo.-----------------------------
 	if exist %COMPILED_RESOURCE_FILES% del %COMPILED_RESOURCE_FILES%
-	goto end
-)
-
-if "%1" == "doc" (
-	:doc
-	echo.
-	echo.------------------------------------
-	echo.Building documentation using sphinx.
-	echo.------------------------------------
-	cd help
-	call make html
-	cd..
+	del *.pyc
 	goto end
 )
 
@@ -240,41 +155,4 @@ if "%1" == "upload" (
 	%PLUGIN_UPLOAD% %PLUGINNAME%.zip
 	goto end
 )
-
-if "%1" == "deployDb" (
-	:deployDb
-	echo.
-	echo.---------------------------
-	echo.Deploy db generate plugin.
-	echo.---------------------------
-	if not exist %QGISDIR%\%PLUGIN_DB_NAME% mkdir %QGISDIR%\%PLUGIN_DB_NAME%
-	for %%i in (%PLUGIN_DB_FILES%) DO (
-		xcopy %%i %QGISDIR%\%PLUGIN_DB_NAME% /Y /I /Q
-	)
-	goto end
-)
-
-if "%1" == "db" (
-	:db
-	call make deployDb
-	echo.
-	echo.---------------------------
-	echo.Generate db.
-	echo.---------------------------
-	Db\empty.qgs
-	ping -n 10 127.0.0.1 >nul
-	call make eraseDb
-	goto end
-)
-
-if "%1" == "eraseDb" (
-	:eraseDb
-	echo.
-	echo.-------------------------
-	echo.Removing deployed db plugin.
-	echo.-------------------------
-	if exist %QGISDIR%\%PLUGIN_DB_NAME% rmdir %QGISDIR%\%PLUGIN_DB_NAME% /s /q
-	goto end
-)
-
 :end
