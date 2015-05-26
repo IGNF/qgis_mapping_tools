@@ -1,5 +1,8 @@
 @ECHO OFF
 
+REM save the path:
+if not exist tmp.txt echo %PATH%> tmp.txt
+
 call c:\OSGeo4W\bin\o4w_env.bat
 
 set PYTHONPATH=C:\OSGeo4W\apps\qgis\python;%PYTHONPATH%
@@ -41,12 +44,8 @@ if "%1" == "help" (
 	echo.  dclean        to remove compiled python files of qgis plugins directory.
 	echo.  derase        to remove deployed plugin.
 	echo.  clean         to remove rcc generated file.
-	echo.  doc           to build sphinx doc.
 	echo.  zip           to create plugin zip bundle.
 	echo.  upload        to upload plugin to Plugin repo ^(TODO !!!^).
-	echo.  db            to launch db creation.
-	echo.  deployDb      to deploy db plugin.
-	echo.  eraseDb       to erase deployed db plugin.
 	echo.
 )
 
@@ -90,7 +89,6 @@ if "%1" == "test" (
 	echo.-----------------------------------
 	echo.Launching tests.
 	echo.-----------------------------------
-	
 	python test\src\testFusion.py
 	goto end
 )
@@ -155,4 +153,7 @@ if "%1" == "upload" (
 	%PLUGIN_UPLOAD% %PLUGINNAME%.zip
 	goto end
 )
+
 :end
+if exist tmp.txt for /f "delims=" %%i in (tmp.txt) do set PATH=%%i
+if exist tmp.txt del tmp.txt
