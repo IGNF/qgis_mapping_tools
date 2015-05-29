@@ -5,9 +5,9 @@ from PyQt4.QtCore import Qt
 from common import Common
 
 class Fusion(QgsMapTool):
-    def __init__(self, canvas):
-        super(QgsMapTool, self).__init__(canvas)
-        self.canvas = canvas
+    def __init__(self, iface):
+        super(QgsMapTool, self).__init__(iface.mapCanvas())
+        self.canvas = iface.mapCanvas()
         self.cursor = QCursor(Qt.CrossCursor)
         self.pathPointsList = []
 
@@ -77,9 +77,9 @@ class Fusion(QgsMapTool):
         # create a feature
         try:
             ft = QgsFeature()
-            mousePathGeom = QgsGeometry.fromPolyline(self.pathPointsList)
             layer = self.canvas.currentLayer()
-            
+            mousePathGeom = QgsGeometry.fromPolyline(self.pathPointsList)
+            print mousePathGeom
             if not mousePathGeom == None:
                 ft.setGeometry(mousePathGeom)
                 if not layer or layer.type() != QgsMapLayer.VectorLayer or layer.featureCount() == 0 or self.newFeat == None:
@@ -87,9 +87,9 @@ class Fusion(QgsMapTool):
                     layer.destroyEditCommand()
                     return
                 layer.removeSelection()
-    
+
                 featuresToFusionList = [self.newFeat.id()]
-    
+
                 selectedFeatureBbox = ft.geometry().boundingBox()
                 intersectFeatIds = self.index.intersects(selectedFeatureBbox)
                 for fId in intersectFeatIds:
@@ -99,18 +99,27 @@ class Fusion(QgsMapTool):
                             if fId not in featuresToFusionList:
                                 self.newFeat.setGeometry(self.newFeat.geometry().combine(f.geometry()))
                                 featuresToFusionList.append(f.id())
+                                
+                if len(featuresToFusionList) == 1:
+                    self.itemsReset()
+                    layer.destroyEditCommand()
+                    return
                 layer.addFeature(self.newFeat)
                 # Get newly added feature
                 f = self.newFeat
                 fid = f.id()
                 self.index.insertFeature({fid: f}.values()[0])
                 for fId in featuresToFusionList:
-                        layer.deleteFeature(fId)
+                    layer.deleteFeature(fId)
     
                 layer.setSelectedFeatures([])
-                
-            self.itemsReset()
-            layer.endEditCommand()
+                self.itemsReset()
+                layer.endEditCommand()
+            else:
+                self.itemsReset()
+                layer.destroyEditCommand()
+                return
+                    
             
         except:
             self.itemsReset()

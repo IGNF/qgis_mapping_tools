@@ -41,7 +41,7 @@ class MappingTools:
             application at run time.
             :type iface: QgsInterface
         '''
-        
+
         # Save reference to the QGIS interface
         self.iface = iface
         # initialize plugin directory
@@ -102,7 +102,6 @@ class MappingTools:
                 added to self.actions list.
             :rtype: QAction
         '''
-
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
@@ -137,7 +136,7 @@ class MappingTools:
             add_to_menu=False,
             parent=self.iface.mainWindow())
         
-        self.fusionMapTool = Fusion(self.iface.mapCanvas())
+        self.fusionMapTool = Fusion(self.iface)
         fusion_icon_path = ':/plugins/MappingTools/fusion_icon.png'
         fusion_action = self.add_action(
             'fusion_action',

@@ -155,5 +155,5 @@ if "%1" == "upload" (
 )
 
 :end
-if exist tmp.txt for /f "delims=" %%i in (tmp.txt) do set PATH=%%i
-if exist tmp.txt del tmp.txt
+REM if exist tmp.txt for /f "delims=" %%i in (tmp.txt) do set PATH=%%i
+REM if exist tmp.txt del tmp.txt
