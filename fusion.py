@@ -34,6 +34,7 @@ class Fusion(QgsMapTool):
         self.index = QgsSpatialIndex(currentLayer.getFeatures())
 
     def canvasPressEvent(self, event):
+        print 'bal'
         if event.button() == 1:
             self.canvas.currentLayer().featureAdded.connect( self.featureAddedEvent )
             self.canvas.currentLayer().featureDeleted.connect( self.featureDeletedEvent )
@@ -72,6 +73,7 @@ class Fusion(QgsMapTool):
         self.r.setToGeometry(QgsGeometry.fromPolyline(self.pathPointsList), None)
 
     def canvasReleaseEvent(self, event):
+        print 'release'
         if not self.leftButton:
             return
         # create a feature

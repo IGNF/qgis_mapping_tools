@@ -21,7 +21,7 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QCoreApplication
-from PyQt4.QtGui import QAction, QIcon
+from PyQt4.QtGui import QAction, QIcon,QToolButton
 from qgis.core import QgsMapLayerRegistry, QgsMapLayer
 
 # Initialize Qt resources from file resources.py
@@ -30,7 +30,7 @@ from import_feature import ImportFeature
 from fusion import Fusion
 import os.path
 from qgis._core import QgsVectorLayer
-
+import qgis
 
 class MappingTools:
 
@@ -41,7 +41,7 @@ class MappingTools:
             application at run time.
             :type iface: QgsInterface
         '''
-
+        qgis.utils.iface.actionShowPythonDialog().trigger()
         # Save reference to the QGIS interface
         self.iface = iface
         # initialize plugin directory
@@ -51,6 +51,8 @@ class MappingTools:
         self.menu = 'Mapping Tools'
         self.toolbar = self.iface.addToolBar(u'MappingTools')
         self.toolbar.setObjectName(u'MappingTools')
+        print "[Mapping_Tools::init] TOOLBAR SIZE : " 
+        print self.toolbar.findChildren(QToolButton)[0].size()
         self.oldMapTool = None
 
     def add_action(
@@ -106,7 +108,7 @@ class MappingTools:
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
-
+        action.setObjectName(id)
         if status_tip is not None:
             action.setStatusTip(status_tip)
 
@@ -126,6 +128,7 @@ class MappingTools:
         return action
 
     def initGui(self):
+
         '''Create the menu entries and toolbar icons inside the QGIS GUI.'''
         import_feature_icon_path = ':/plugins/MappingTools/import_feature_icon.png'
         import_feature_action = self.add_action(

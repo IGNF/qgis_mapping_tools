@@ -21,6 +21,8 @@ set PY_FILES= ^
 	import_feature.py ^
 	fusion.py ^
 	common.py ^
+	test\src\testFusion.py ^
+	test\src\qgis_interface.py ^
 	__init__.py
 
 set UI_FILES=
