@@ -41,7 +41,6 @@ class MappingTools:
             application at run time.
             :type iface: QgsInterface
         '''
-        qgis.utils.iface.actionShowPythonDialog().trigger()
         # Save reference to the QGIS interface
         self.iface = iface
         # initialize plugin directory
@@ -51,8 +50,6 @@ class MappingTools:
         self.menu = 'Mapping Tools'
         self.toolbar = self.iface.addToolBar(u'MappingTools')
         self.toolbar.setObjectName(u'MappingTools')
-        print "[Mapping_Tools::init] TOOLBAR SIZE : " 
-        print self.toolbar.findChildren(QToolButton)[0].size()
         self.oldMapTool = None
 
     def add_action(
@@ -108,7 +105,6 @@ class MappingTools:
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
-        action.setObjectName(id)
         if status_tip is not None:
             action.setStatusTip(status_tip)
 
