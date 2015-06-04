@@ -13,7 +13,6 @@ class Fusion(QgsMapTool):
         self.leftButton = False
 
     def activate(self):
-        print 'fusion activate'
         self.canvas.setCursor(self.cursor)
         self.canvas.setMouseTracking(False)
         self.activated.emit()
@@ -21,7 +20,6 @@ class Fusion(QgsMapTool):
         self.canvas.currentLayerChanged.connect(self.updateSpIdx)
         
     def deactivate(self):
-        #print 'fusion deactivate'
         self.canvas.setMouseTracking(True)
         self.deactivated.emit()
         try:
@@ -35,7 +33,6 @@ class Fusion(QgsMapTool):
         self.index = QgsSpatialIndex(currentLayer.getFeatures())
 
     def canvasPressEvent(self, event):
-        #print 'bal'
         if event.button() == 1:
             self.canvas.currentLayer().featureAdded.connect( self.featureAddedEvent )
             self.canvas.currentLayer().featureDeleted.connect( self.featureDeletedEvent )
@@ -72,7 +69,6 @@ class Fusion(QgsMapTool):
         self.r.setToGeometry(QgsGeometry.fromPolyline(self.pathPointsList), None)
 
     def canvasReleaseEvent(self, event):
-        #print 'release'
         if not self.leftButton:
             return
         # create a feature
@@ -120,7 +116,6 @@ class Fusion(QgsMapTool):
                 self.itemsReset()
                 layer.destroyEditCommand()
                 return
-                    
             
         except:
             self.itemsReset()
@@ -128,14 +123,12 @@ class Fusion(QgsMapTool):
             raise 
 
     def featureAddedEvent(self, feature):
-        #print 'add feat'
         if self.canvas.currentLayer():
             req = QgsFeatureRequest(feature)
             for f in self.canvas.currentLayer().getFeatures(req):
                 self.index.insertFeature({feature: f}.values()[0])
 
     def featureDeletedEvent(self, feature):
-        #print 'del feat'
         if self.canvas.currentLayer():
             req = QgsFeatureRequest(feature)
             for f in self.canvas.currentLayer().getFeatures(req):
