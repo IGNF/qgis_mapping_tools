@@ -32,7 +32,8 @@ class TestMappingTools(unittest.TestCase):
             :type imgName: QString
             :default imgName: 'debugScreenshot.png'
         '''
-        iface.mapCanvas().saveAsImage(imgName+'.png')
+        
+        iface.mapCanvas().saveAsImage(imgName)
     
     def addTestVectorLayer(self, layerName='test/data/segment.shp'):
         '''Add a vector layer to the map.
@@ -185,8 +186,6 @@ class TestMappingTools(unittest.TestCase):
             :rtype: QgsVectorLayer
         '''
 
-        # Open python console
-        iface.actionShowPythonDialog().trigger()
         #Add test layer to map registry
         self.addTestVectorLayer()
         # Set layer in edit mode
@@ -199,6 +198,10 @@ class TestMappingTools(unittest.TestCase):
         return iface.mapCanvas().layers()[0]
     
     def testFusion(self):
+        # Open python console
+        iface.actionShowPythonDialog().trigger()
+        oldMapToolActionName = iface.mapCanvas().mapTool().action().text()
+        print oldMapToolActionName
         
         layerResult = self.runFusion()
         # Compare the features count with the expected result 
@@ -208,6 +211,17 @@ class TestMappingTools(unittest.TestCase):
         else:
             print 'Fusion test fails'
             return
+        # Set layer in edit mode
+        layerResult.commitChanges()
+        if self.findButtonByActionName('Fusion').isEnabled() == False:
+            print 'Disable button OK'
+        else:
+            print 'Disable button fails'
+        
+        if self.findButtonByActionName(oldMapToolActionName).isEnabled() == True:
+            print 'Enable previous map tool button OK'
+        else:
+            print 'Enable previous map tool button fails'
     def testImportFeature(self):
         pass
 
