@@ -13,7 +13,7 @@ class Fusion(QgsMapTool):
         self.leftButton = False
 
     def activate(self):
-        #print 'fusion activate'
+        print 'fusion activate'
         self.canvas.setCursor(self.cursor)
         self.canvas.setMouseTracking(False)
         self.activated.emit()
