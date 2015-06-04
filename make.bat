@@ -91,7 +91,7 @@ if "%1" == "test" (
 	echo.-----------------------------------
 	echo.Launching tests.
 	echo.-----------------------------------
-	python test\src\testFusion.py
+	call qgis --code test\src\testMappingTools.py
 	goto end
 )
 
@@ -157,5 +157,5 @@ if "%1" == "upload" (
 )
 
 :end
-REM if exist tmp.txt for /f "delims=" %%i in (tmp.txt) do set PATH=%%i
-REM if exist tmp.txt del tmp.txt
+if exist tmp.txt for /f "delims=" %%i in (tmp.txt) do set PATH=%%i
+if exist tmp.txt del tmp.txt

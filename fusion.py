@@ -76,7 +76,6 @@ class Fusion(QgsMapTool):
             ft = QgsFeature()
             layer = self.canvas.currentLayer()
             mousePathGeom = QgsGeometry.fromPolyline(self.pathPointsList)
-            print mousePathGeom
             if not mousePathGeom == None:
                 ft.setGeometry(mousePathGeom)
                 if not layer or layer.type() != QgsMapLayer.VectorLayer or layer.featureCount() == 0 or self.newFeat == None:

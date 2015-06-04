@@ -13,7 +13,7 @@ import numpy as np
 import MappingTools
 
 class TestMappingTools(unittest.TestCase):
-    
+
     '''Speed of mouse cursor move, 0.01 =< float =< 1 (0.2 for realistic move)'''
     MOVE_SPEED = 0.2
     
@@ -25,6 +25,14 @@ class TestMappingTools(unittest.TestCase):
             :type iface: QgsInterface
         '''
         self.mouse = PyMouse()
+
+    def screenShot(self, imgName = 'debugScreenshot'):
+        '''Shoot screen.
+            :param imgName: Text value of the action to click on.
+            :type imgName: QString
+            :default imgName: 'debugScreenshot.png'
+        '''
+        iface.mapCanvas().saveAsImage(imgName+'.png')
     
     def addTestVectorLayer(self, layerName='test/data/segment.shp'):
         '''Add a vector layer to the map.
@@ -36,18 +44,13 @@ class TestMappingTools(unittest.TestCase):
         layer = QgsVectorLayer(layerName, 'input', 'ogr')
         QgsMapLayerRegistry.instance().addMapLayer(layer)
 
-    def screenShot(self, imgName = 'debugScreenshot'):
-        '''Shoot screen.
-            :param imgName: Text value of the action to click on.
-            :type imgName: QString
-            :default imgName: 'debugScreenshot.png'
-        '''
-        iface.mapCanvas().saveAsImage(imgName+'.png')
-
     def findButtonByActionName(self, buttonActionName):
         '''Find button corresponding to the given action.
             :param buttonActionName: Text value of the action.
             :type buttonActionName: QString
+            
+            :returns: Widget if found, None else.
+            :rtype: QWidget or None
         '''
         for tbar in iface.mainWindow().findChildren(QtGui.QToolBar):
             for action in tbar.actions():
@@ -57,32 +60,13 @@ class TestMappingTools(unittest.TestCase):
                             return widget
         return None
 
-    def clickOnWidget(self, widget):
-        '''Click on the given widget.
-            :param widget: Widget to click on.
-            :type widget: QWidget
-        '''
-
-        widgetX = widget.rect().center().x()
-        widgetY = widget.rect().center().y()
-        widgetPos = widget.mapToGlobal(QtCore.QPoint(widgetX, widgetY))
-       
-        self.moveTo(widgetPos)
-        self.mouse.click(widgetPos.x(), widgetPos.y(), 1)
-        
-    def clickOn(self, actionName):
-        '''Click on action by its text value.
-            :param actionName: Text value of the action to click on.
-            :type actionName: QString
-        '''
-        
-        button = self.findButtonByActionName(actionName)
-        self.clickOnWidget(button)
-
     def mapToScreenPoint(self, mapCoordPoint):
         '''Convert point on the map canvas from map to screen coordinates.
-            :param mapCoordPoint: Mouse cursor destination point.
+            :param mapCoordPoint: Point in map coordinates.
             :type mapCoordPoint: QgsPoint
+            
+            :returns: Point in screen coordinates
+            :rtype: QPoint
         '''
         # Get point in px into map canvas referential
         sourceScreen = iface.mapCanvas().getCoordinateTransform().transform(mapCoordPoint)
@@ -94,6 +78,7 @@ class TestMappingTools(unittest.TestCase):
 
         # Get point in px into screen referential
         sourceAbsScreen = QtCore.QPoint(sourceRelScreen.x() + canvasPos.x(), sourceRelScreen.y() + canvasPos.y())
+        
         return sourceAbsScreen
 
     def moveTo(self, dest, rate=MOVE_SPEED):
@@ -116,7 +101,35 @@ class TestMappingTools(unittest.TestCase):
             # Useful to let QGIS processing
             QgsApplication.processEvents()
 
-        self.mouse.move(dest.x(),dest.y())
+        self.mouse.move(dest.x(), dest.y())
+        
+        # Useful to let QGIS processing
+        QgsApplication.processEvents()
+
+    def clickOnWidget(self, widget):
+        '''Click on the given widget.
+            :param widget: Widget to click on.
+            :type widget: QWidget
+        '''
+
+        widgetX = widget.rect().center().x()
+        widgetY = widget.rect().center().y()
+        widgetPos = widget.mapToGlobal(QtCore.QPoint(widgetX, widgetY))
+       
+        self.moveTo(widgetPos)
+        self.mouse.click(widgetPos.x(), widgetPos.y(), 1)
+        
+        # Useful to let QGIS processing
+        QgsApplication.processEvents()
+        
+    def clickOn(self, actionName):
+        '''Click on action by its text value.
+            :param actionName: Text value of the action to click on.
+            :type actionName: QString
+        '''
+        
+        button = self.findButtonByActionName(actionName)
+        self.clickOnWidget(button)
 
     def dragAndDropScreen(self, source, dest):
         '''Press mouse at source point, move to destination point and release.
@@ -129,10 +142,16 @@ class TestMappingTools(unittest.TestCase):
 
         self.moveTo(source)
         self.mouse.press(source.x(), source.y(), 1)
+        
+        # Useful to let QGIS processing
+        QgsApplication.processEvents()
 
         self.moveTo(dest)
         self.mouse.release(dest.x(), dest.y(), 1)
-    
+        
+        # Useful to let QGIS processing
+        QgsApplication.processEvents()
+
     def dragAndDropMap(self, source, dest):
         '''DragAndDropScreen in map coordinates.
             :param source: Drag start position.
@@ -145,12 +164,29 @@ class TestMappingTools(unittest.TestCase):
         screenCoordDest = self.mapToScreenPoint(dest)
 
         self.dragAndDropScreen(screenCoordSource, screenCoordDest)
-    
-    def testFusion(self):
-        '''Press mouse at source point, move to destination point and release.'''
+
+    def featuresCount(self, layer):
+        '''Count the features of a vector layer.
+            :param layer: Vector layer.
+            :type layer: QgsVectorLayer
+            
+            :returns: Layer features count.
+            :rtype: int
+        '''
+
+        count = 0
+        for feature in layer.getFeatures():
+            count += 1
+        return count
+
+    def runFusion(self):
+        '''Press mouse at source point, move to destination point and release.
+            :returns: The layer after processing.
+            :rtype: QgsVectorLayer
+        '''
 
         # Open python console
-        #iface.actionShowPythonDialog().trigger()
+        iface.actionShowPythonDialog().trigger()
         #Add test layer to map registry
         self.addTestVectorLayer()
         # Set layer in edit mode
@@ -158,6 +194,22 @@ class TestMappingTools(unittest.TestCase):
         # Activate fusion action
         self.clickOn('Fusion')
         # Press and move on the map canvas to carry out the fusion
-        self.dragAndDropMap(QgsPoint(783902,6528458),  QgsPoint(785223,6528279)) 
+        self.dragAndDropMap(QgsPoint(783902,6528458),  QgsPoint(785223,6528279))
+        
+        return iface.mapCanvas().layers()[0]
+    
+    def testFusion(self):
+        
+        layerResult = self.runFusion()
+        # Compare the features count with the expected result 
+        featuresCount = self.featuresCount(layerResult)
+        if featuresCount == 35:
+            print 'Fusion OK'
+        else:
+            print 'Fusion test fails'
+            return
+    def testImportFeature(self):
+        pass
 
 TestMappingTools().testFusion()
+TestMappingTools().testImportFeature()
