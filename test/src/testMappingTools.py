@@ -17,7 +17,7 @@ class TestMappingTools(object):
     '''Speed of mouse cursor move, 0.01 =< float =< 1 (0.2 for realistic move)'''
     MOVE_SPEED = 0.2
     # Do full test or a part only
-    TESTS_TO_CHECK = 'up_to_fusion' # available values : 'up_to_fusion', 'up_to_undo', 'up_to_quit_edit' , every thing else for full test
+    TESTS_TO_CHECK = '' # available values : 'up_to_fusion', 'up_to_undo', 'up_to_quit_edit' , every thing else for full test
     
     def __init__(self):
         '''Constructor.
@@ -216,11 +216,14 @@ class TestMappingTools(object):
         '''Print test result.
             :param expected: expected value to test.
             :type expected: unknown
+			
             :param result: result value to test.
             :type result: unknown
+			
             :param testName: Name of test (into header printed).
             :type testName: QString
-            :param valueToTestName: Tested variable name (printed if test fails).
+            
+			:param valueToTestName: Tested variable name (printed if test fails).
             :type valueToTestName: QString
             
             :returns: True if test pass, False else.
@@ -281,7 +284,7 @@ class TestMappingTools(object):
             return
         
         # Previous map tool button must be re-checked
-        if not self.printTest(True, self.findButtonByActionName(previousActivatedMapToolActionName).isChecked(), 'Check previous map tool button ('+oldMapToolActionName+')', 'Previous map tool button ('+oldMapToolActionName+') status'):
+        if not self.printTest(True, self.findButtonByActionName(previousActivatedMapToolActionName).isChecked(), 'Check previous map tool button ('+previousActivatedMapToolActionName+')', 'Previous map tool button ('+previousActivatedMapToolActionName+') status'):
             return
         
         # End of test ?
