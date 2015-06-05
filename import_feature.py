@@ -8,4 +8,5 @@ class ImportFeature:
         self.run()
 
     def run(self):
-        Common().popup('run import feature')
+        pass
+        #Common().popup('run import feature')

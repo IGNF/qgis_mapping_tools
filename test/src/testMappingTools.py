@@ -17,7 +17,14 @@ class TestMappingTools(object):
     '''Speed of mouse cursor move, 0.01 =< float =< 1 (0.2 for realistic move)'''
     MOVE_SPEED = 0.2
     # Do full test or a part only
-    TESTS_TO_CHECK = '' # available values : 'up_to_fusion', 'up_to_undo', 'up_to_quit_edit' , every thing else for full test
+    TESTS_TO_CHECK = '' 
+    ''' available values : 'up_to_fusion',
+                           'up_to_undo_fusion', 
+                           'up_to_quit_edit_fusion' 
+                           'up_to_fusion_import_feat',
+                           'up_to_undo_import_feat', 
+                           'up_to_quit_edit_import_feat',
+                           every thing else for full test'''
     
     def __init__(self):
         '''Constructor.
@@ -38,17 +45,19 @@ class TestMappingTools(object):
         
         iface.mapCanvas().saveAsImage(imgName)
     
-    def addTestVectorLayer(self, layerName='test/data/segment.shp'):
+    def addTestVectorLayer(self, path='test/data/segment.shp'):
         '''Add a vector layer to the map.
-            :param layerName: Layer name to add.
-            :type layerName: QString
-            :default layerName: 'test/data/segement.shp'
+            :param path: Shapefile name to add.
+            :type path: QString
+            :default path: 'test/data/segement.shp'
             
             :returns: Vector layer which has been added to map canvas
             :rtype: QgsVectorLayer
         '''
 
-        layer = QgsVectorLayer(layerName, 'input', 'ogr')
+        # Set legend name from path
+        layerName = path.split('/')[-1:][0].split('.shp')[0]
+        layer = QgsVectorLayer(path, layerName, 'ogr')
         QgsMapLayerRegistry.instance().addMapLayer(layer)
         # Useful to let QGIS processing
         QgsApplication.processEvents()
@@ -116,6 +125,20 @@ class TestMappingTools(object):
         # Useful to let QGIS processing
         QgsApplication.processEvents()
 
+    def clickOnMapPoint(self, point):
+        '''Click on the map at the given point (map coordinates).
+            :param point: Widget to click on.
+            :type point: QgsPoint
+        '''
+
+        sceenCoordPoint = self.mapToScreenPoint(point)
+       
+        self.moveTo(sceenCoordPoint)
+        self.mouse.click(sceenCoordPoint.x(), sceenCoordPoint.y(), 1)
+        
+        # Useful to let QGIS processing
+        QgsApplication.processEvents()
+        
     def clickOnWidget(self, widget):
         '''Click on the given widget.
             :param widget: Widget to click on.
@@ -132,7 +155,7 @@ class TestMappingTools(object):
         # Useful to let QGIS processing
         QgsApplication.processEvents()
         
-    def clickOn(self, actionName):
+    def clickOnWidgetByActionName(self, actionName):
         '''Click on action by its text value.
             :param actionName: Text value of the action to click on.
             :type actionName: QString
@@ -251,10 +274,10 @@ class TestMappingTools(object):
         layer = self.addTestVectorLayer()
 
         # Simulate click on edit mode button
-        self.clickOn(iface.actionToggleEditing().text())
+        self.clickOnWidgetByActionName(iface.actionToggleEditing().text())
 
         # Simulate click on plugin fusion button
-        self.clickOn('Fusion')
+        self.clickOnWidgetByActionName('Fusion')
 
         # Press (left click) and move mouse on the map canvas to carry out the fusion
         self.dragAndDropMap(QgsPoint(783902,6528458),  QgsPoint(785223,6528279))
@@ -262,37 +285,104 @@ class TestMappingTools(object):
         # Features must have been merged (test with features count)
         if not self.printTest(35, self.featuresCount(layer), 'Fusion', 'Features count'):
             return
-        
+
         # End of test ?
         if self.TESTS_TO_CHECK == 'up_to_fusion':
+            return
+
+        # Test undo action
+        self.ctrlZ() 
+        if not self.printTest(37, self.featuresCount(layer), 'Undo fusion(Ctrl + z)', 'Features count'):
+            return
+
+        # End of test ?
+        if self.TESTS_TO_CHECK == 'up_to_undo_fusion':
+            return
+
+        # Quit edit mode
+        self.quitLayerEditMode(layer)
+
+        # Fusion button must be enabled
+        if not self.printTest(False, self.findButtonByActionName('Fusion').isEnabled(), 'Disable fusion button', 'Fusion button status'):
+            return
+
+        # Previous map tool button must be re-checked
+        if not self.printTest(True, self.findButtonByActionName(previousActivatedMapToolActionName).isChecked(), 'Check previous map tool button ('+previousActivatedMapToolActionName+')', 'Previous map tool button ('+previousActivatedMapToolActionName+') status'):
+            return
+
+        # End of test ?
+        if self.TESTS_TO_CHECK == 'up_to_quit_edit_fusion':
+            return
+
+        # Clear layers
+        QgsMapLayerRegistry.instance().removeAllMapLayers()
+        iface.mapCanvas().refresh()
+        # Close python console
+        iface.actionShowPythonDialog().trigger()
+
+        self.testImportFeature()
+
+    def testImportFeature(self):
+        '''Simulate user moves and check results.'''
+
+        # Open python console
+        iface.actionShowPythonDialog().trigger()
+        # Get map tool action that is activated
+        previousActivatedMapToolActionName = iface.mapCanvas().mapTool().action().text()
+        #Add test layers to map registry
+        layerDest = self.addTestVectorLayer()
+        layerSource = self.addTestVectorLayer('test/data/segment2.shp')
+        
+        iface.setActiveLayer(layerDest)
+        
+        # Simulate click on edit mode button
+        self.clickOnWidgetByActionName(iface.actionToggleEditing().text())
+
+        # Simulate click on plugin fusion button
+        self.clickOnWidgetByActionName('Import Feature')
+
+        iface.setActiveLayer(layerSource)
+
+        # Move and click on the feature to import
+        self.clickOnMapPoint(QgsPoint(784803,6527984))
+
+        # Feature must have been added
+        if not self.printTest(38, self.featuresCount(layerDest), 'Import feature', 'Features count'):
+            return
+
+        # End of test ?
+        if self.TESTS_TO_CHECK == 'up_to_import_feature':
             return
         
         # Test undo action
         self.ctrlZ() 
-        if not self.printTest(37, self.featuresCount(layer), 'Undo (Ctrl + z)', 'Features count'):
+        if not self.printTest(37, self.featuresCount(layerDest), 'Undo Import feature(Ctrl + z)', 'Features count'):
             return
-        
+
         # End of test ?
-        if self.TESTS_TO_CHECK == 'up_to_undo':
+        if self.TESTS_TO_CHECK == 'up_to_undo_import_feat':
             return
-        
+
         # Quit edit mode
-        self.quitLayerEditMode(layer)
-        
+        self.quitLayerEditMode(layerDest)
+
         # Fusion button must be enabled
-        if not self.printTest(False, self.findButtonByActionName('Fusion').isEnabled(), 'Disable fusion button', 'Fusion button status'):
+        if not self.printTest(False, self.findButtonByActionName('Import Feature').isEnabled(), 'Disable fusion button', 'Fusion button status'):
             return
-        
+
         # Previous map tool button must be re-checked
         if not self.printTest(True, self.findButtonByActionName(previousActivatedMapToolActionName).isChecked(), 'Check previous map tool button ('+previousActivatedMapToolActionName+')', 'Previous map tool button ('+previousActivatedMapToolActionName+') status'):
             return
-        
+
         # End of test ?
-        if self.TESTS_TO_CHECK == 'up_to_quit_edit':
+        if self.TESTS_TO_CHECK == 'up_to_quit_edit_import_feat':
             return
 
-    def testImportFeature(self):
-        pass
+        # Clear layers
+        QgsMapLayerRegistry.instance().removeAllMapLayers()
+        iface.mapCanvas().refresh()
+        # Close python console
+        iface.actionShowPythonDialog().trigger()
+
 
 TestMappingTools().testFusion()
-TestMappingTools().testImportFeature()
