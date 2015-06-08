@@ -5,28 +5,29 @@ from PyQt4.QtCore import Qt
 from common import Common
 
 class Fusion(QgsMapTool):
-    def __init__(self, iface):
-        super(QgsMapTool, self).__init__(iface.mapCanvas())
-        self.canvas = iface.mapCanvas()
+    def __init__(self, canvas):
+        super(QgsMapTool, self).__init__(canvas)
+        self.canvas = canvas
         self.cursor = QCursor(Qt.CrossCursor)
         self.pathPointsList = []
         self.leftButton = False
+        self.activated.connect(self.activateFusion)
+        self.deactivated.connect(self.deactivateFusion)
 
-    def activate(self):
+    def activateFusion(self):
         self.canvas.setCursor(self.cursor)
         self.canvas.setMouseTracking(False)
-        self.activated.emit()
         self.updateSpIdx(self.canvas.currentLayer())
         self.canvas.currentLayerChanged.connect(self.updateSpIdx)
         
-    def deactivate(self):
+    def deactivateFusion(self):
         self.canvas.setMouseTracking(True)
-        self.deactivated.emit()
         try:
             self.canvas.currentLayerChanged.disconnect(self.updateSpIdx)
         except:
             pass
-
+        
+    
     def updateSpIdx(self, currentLayer):
         if currentLayer == None:
             return

@@ -20,17 +20,18 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import QCoreApplication
-from PyQt4.QtGui import QAction, QIcon,QToolButton
-from qgis.core import QgsMapLayerRegistry, QgsMapLayer
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+
+from qgis.core import QgsMapLayerRegistry, QgsMapLayer, QgsVectorLayer
 
 # Initialize Qt resources from file resources.py
 import resources_rc
+
 from import_feature import ImportFeature
 from fusion import Fusion
+
 import os.path
-from qgis._core import QgsVectorLayer
-import qgis
 
 class MappingTools:
 
@@ -46,11 +47,11 @@ class MappingTools:
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
         # Declare instance attributes
-        self.actions = {}
+        self.mapTools = {}
         self.menu = 'Mapping Tools'
         self.toolbar = self.iface.addToolBar(u'MappingTools')
         self.toolbar.setObjectName(u'MappingTools')
-        self.oldMapTool = None
+        self.previousActivatedMapTool = None
 
     def add_action(
         self,
@@ -63,7 +64,8 @@ class MappingTools:
         add_to_toolbar=True,
         status_tip=None,
         whats_this=None,
-        parent=None):
+        parent=None,
+        mapTool=None):
         '''Add a toolbar icon to the toolbar.
             :param icon_path: Path to the icon for this action. Can be a resource
                 path (e.g. ':/plugins/foo/bar.png') or a normal file system path.
@@ -97,8 +99,7 @@ class MappingTools:
             :param whats_this: Optional text to show in the status bar when the
                 mouse pointer hovers over the action.
 
-            :returns: The action that was created. Note that the action is also
-                added to self.actions list.
+            :returns: The action that was created. 
             :rtype: QAction
         '''
         icon = QIcon(icon_path)
@@ -118,24 +119,30 @@ class MappingTools:
             self.iface.addPluginToMenu(
                 self.menu,
                 action)
-
-        self.actions[id] = action
+            
+        if mapTool:
+            mapTool.setAction(action)
+        self.mapTools[action] = mapTool
 
         return action
 
     def initGui(self):
 
         '''Create the menu entries and toolbar icons inside the QGIS GUI.'''
+        
+        importFeatureMapTool = ImportFeature(self.iface, '', '')
         import_feature_icon_path = ':/plugins/MappingTools/import_feature_icon.png'
         import_feature_action = self.add_action(
             'import_feature_action',
             import_feature_icon_path,
             text='Import Feature',
             callback=self.importFeature,
+            enabled_flag=True,
             add_to_menu=False,
-            parent=self.iface.mainWindow())
+            parent=self.iface.mainWindow(),
+            mapTool=importFeatureMapTool)
         
-        self.fusionMapTool = Fusion(self.iface)
+        fusionMapTool = Fusion(self.iface.mapCanvas())
         fusion_icon_path = ':/plugins/MappingTools/fusion_icon.png'
         fusion_action = self.add_action(
             'fusion_action',
@@ -144,60 +151,66 @@ class MappingTools:
             callback=self.fusion,
             enabled_flag=False,
             add_to_menu=False,
-            parent=self.iface.mainWindow())
-        fusion_action.setCheckable(True)
-        self.fusionMapTool.setAction(fusion_action)
-        self.fusionMapTool.activated.connect(self.keepPressed)
-        self.fusionMapTool.deactivated.connect(self.unCheck)
+            parent=self.iface.mainWindow(),
+            mapTool=fusionMapTool)
         
-        self.layerChangedEvent(self.iface.mapCanvas().currentLayer())
-        self.iface.mapCanvas().currentLayerChanged.connect(self.layerChangedEvent)
+        for action in self.iface.mainWindow().findChild(QToolBar, 'MappingTools').actions():
+            self.setMapToolBehaviour(action)
+        
 
+        self.manageButtonBehaviour(self.findActionByName('Fusion'))
+        self.iface.mapCanvas().currentLayerChanged.connect(lambda: self.manageButtonBehaviour(self.findActionByName('Fusion')))
+    
+    def findActionByName(self, actionName):
+        for tbar in self.iface.mainWindow().findChildren(QToolBar):
+            for action in tbar.actions():
+                if action.text() == actionName:
+                    return action
+        return None
+    
+    def setMapToolBehaviour(self, action):
+        action.setCheckable(True)
+        
     def unload(self):
         '''Removes the plugin menu item and icon from QGIS GUI.'''
-        for action in self.actions.values():
+        for action in self.iface.mainWindow().findChild(QToolBar, 'MappingTools').actions():
             self.iface.removePluginMenu(
                 'Mapping Tools',
                 action)
             self.iface.removeToolBarIcon(action)
+            # Unset the map tool in case it's set
+            self.iface.mapCanvas().unsetMapTool(self.mapTools[action])
         # remove the toolbar
         del self.toolbar
-        # Unset the map tool in case it's set
-        self.iface.mapCanvas().unsetMapTool(self.fusionMapTool)
-
-    def keepPressed(self):
-        self.actions['fusion_action'].setChecked(True)
-
-    def unCheck(self):
-        self.actions['fusion_action'].setChecked(False)
-
     def importFeature(self):
-        ImportFeature(self.iface, sourceLayer= '', destinationLayer='')
+        if self.iface.mapCanvas().mapTool().action() not in self.iface.mainWindow().findChild(QToolBar, 'MappingTools').actions():
+            self.previousActivatedMapTool = self.iface.mapCanvas().mapTool()
+        self.iface.mapCanvas().setMapTool(self.mapTools[self.findActionByName('Import Feature')])
 
     def fusion(self):
-        self.oldMapTool = self.iface.mapCanvas().mapTool()
-        self.iface.mapCanvas().setMapTool(self.fusionMapTool)
+        if self.iface.mapCanvas().mapTool().action() not in self.iface.mainWindow().findChild(QToolBar, 'MappingTools').actions():
+            self.previousActivatedMapTool = self.iface.mapCanvas().mapTool()
+        self.iface.mapCanvas().setMapTool(self.mapTools[self.findActionByName('Fusion')])
         
-    def layerChangedEvent(self, currentLayer):
+        
+    def manageButtonBehaviour(self, action):
+        currentLayer = self.iface.mapCanvas().currentLayer()
         if not currentLayer:
             return
         if currentLayer.isEditable():
-            self.actions['fusion_action'].setEnabled(True)
+            self.enableAction(action)
         else:
-            self.actions['fusion_action'].setEnabled(False)
-            self.iface.mapCanvas().unsetMapTool(self.fusionMapTool)
-            if not self.oldMapTool == None:
-                self.iface.mapCanvas().setMapTool(self.oldMapTool)
+            self.disableAction(action)
         
-        if type(currentLayer) == QgsVectorLayer:     
-            currentLayer.editingStarted.connect(self.editingStartedEvent)
-            currentLayer.editingStopped.connect(self.editingStoppedEvent)
+        if type(currentLayer) == QgsVectorLayer:
+            currentLayer.editingStarted.connect(lambda: self.enableAction(action))
+            currentLayer.editingStopped.connect(lambda: self.disableAction(action))
         
-    def editingStartedEvent(self):
-        self.actions['fusion_action'].setEnabled(True)
+    def enableAction(self, action):
+        action.setEnabled(True)
         
-    def editingStoppedEvent(self):
-        self.actions['fusion_action'].setEnabled(False)
-        self.iface.mapCanvas().unsetMapTool(self.fusionMapTool)
-        if not self.oldMapTool == None:
-            self.iface.mapCanvas().setMapTool(self.oldMapTool)
+    def disableAction(self, action):
+        action.setEnabled(False)
+        self.iface.mapCanvas().unsetMapTool(self.mapTools[action])
+        if not self.previousActivatedMapTool == None:
+            self.iface.mapCanvas().setMapTool(self.previousActivatedMapTool)

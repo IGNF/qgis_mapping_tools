@@ -15,7 +15,7 @@ import MappingTools
 class TestMappingTools(object):
 
     '''Speed of mouse cursor move, 0.01 =< float =< 1 (0.2 for realistic move)'''
-    MOVE_SPEED = 0.2
+    MOVE_SPEED = 1
     # Do full test or a part only
     TESTS_TO_CHECK = '' 
     ''' available values : 'up_to_fusion',
@@ -279,6 +279,12 @@ class TestMappingTools(object):
         # Simulate click on plugin fusion button
         self.clickOnWidgetByActionName('Fusion')
 
+        # Simulate 2nd click and check if fusion button stay checked
+        self.clickOnWidgetByActionName('Fusion')
+        # Fusion button must be enabled
+        if not self.printTest(True, self.findButtonByActionName('Fusion').isChecked(), 'Fusion button stays checked', 'Fusion button status'):
+            return
+        
         # Press (left click) and move mouse on the map canvas to carry out the fusion
         self.dragAndDropMap(QgsPoint(783902,6528458),  QgsPoint(785223,6528279))
 
@@ -304,6 +310,10 @@ class TestMappingTools(object):
 
         # Fusion button must be enabled
         if not self.printTest(False, self.findButtonByActionName('Fusion').isEnabled(), 'Disable fusion button', 'Fusion button status'):
+            return
+
+        # Fusion button must be enabled
+        if not self.printTest(False, self.findButtonByActionName('Fusion').isChecked(), 'Uncheck fusion button', 'Fusion button status'):
             return
 
         # Previous map tool button must be re-checked
