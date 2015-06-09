@@ -51,6 +51,7 @@ class Fusion(QgsMapTool):
             if not layer or layer.type() != QgsMapLayer.VectorLayer or layer.featureCount() == 0:
                 self.itemsReset()
                 return
+            
     def canvasMoveEvent(self, event):
         if not self.leftButton:
             return

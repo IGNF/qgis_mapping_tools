@@ -69,16 +69,16 @@ if "%1" == "deploy" (
 	echo.------------------------------------------
 	if not exist %QGISDIR%\%PLUGINNAME% mkdir %QGISDIR%\%PLUGINNAME%
 	for %%i in (%PY_FILES%) DO (
-		xcopy %%i %QGISDIR%\%PLUGINNAME% /Y /I /Q
+		xcopy %%i %QGISDIR%\%PLUGINNAME% /Y /I /Q > nul
 	)
 	for %%i in (%UI_FILES%) DO (
-		xcopy %%i %QGISDIR%\%PLUGINNAME% /Y /I /Q
+		xcopy %%i %QGISDIR%\%PLUGINNAME% /Y /I /Q > nul
 	)
 	for %%i in (%COMPILED_RESOURCE_FILES%) DO (
-		xcopy %%i %QGISDIR%\%PLUGINNAME% /Y /I /Q
+		xcopy %%i %QGISDIR%\%PLUGINNAME% /Y /I /Q > nul
 	)
 	for %%i in (%EXTRAS%) DO (
-		xcopy %%i %QGISDIR%\%PLUGINNAME% /Y /I /Q 
+		xcopy %%i %QGISDIR%\%PLUGINNAME% /Y /I /Q > nul
 	)
 	goto end
 )

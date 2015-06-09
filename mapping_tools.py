@@ -130,7 +130,7 @@ class MappingTools:
 
         '''Create the menu entries and toolbar icons inside the QGIS GUI.'''
         
-        importFeatureMapTool = ImportFeature(self.iface, '', '')
+        importFeatureMapTool = ImportFeature(self.iface)
         import_feature_icon_path = ':/plugins/MappingTools/import_feature_icon.png'
         import_feature_action = self.add_action(
             'import_feature_action',
