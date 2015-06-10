@@ -3,7 +3,7 @@ from qgis.gui import *
 from qgis.utils import iface
 from PyQt4.QtGui import QCursor, QPixmap, QColor, QGraphicsScene
 from PyQt4.QtCore import Qt
-
+import processing
 from common import Common
 from ogr import Layer
 
@@ -14,6 +14,7 @@ class ImportFeature(QgsMapTool):
         self.iface = iface
         self.activated.connect(self.activateImportFeature)
         self.activated.connect(self.deactivateImportFeature)
+        self.moveLocked=False
 
     def activateImportFeature(self):
         for layer in self.iface.mapCanvas().layers():
@@ -53,16 +54,32 @@ class ImportFeature(QgsMapTool):
     def getGeomToImportByPoint(self, point):
         sourceFeature = self.getFeatureByPoint(point, self.iface.mapCanvas().currentLayer())
         if sourceFeature == None:
+            print 'pas de feature source'
             return None
         destFeature =  self.getFeatureByPoint(point, self.destinationLayer)
         if destFeature == None:
+            print 'pas de feature dest'
             return None
+        
+        self.iface.mapCanvas().currentLayer().setSelectedFeatures([sourceFeature])
+        
         
         sourceGeom = sourceFeature.geometry()
         destGeom = destFeature.geometry()
         
-        intersection = destGeom.intersection(sourceGeom)
-        
+        intersection = QgsGeometry(destGeom.intersection(sourceGeom))
+        print 'SOURCE' + str(sourceGeom.exportToWkt())
+        print 'DEST' + str(destGeom.exportToWkt())
+        print 'INTERSECTION WKT : '+str(intersection.exportToWkt())
+        if intersection == None:
+            print 'intersection none'
+        if intersection.isMultipart():
+            '''print 'inters multipart'
+            for part in intersection.asGeometryCollection():
+                if point.within(part):
+                    print 'part found ? '+str(part)
+                    return QgsGeometry(part)
+            '''       
         return intersection
 
     def canvasPressEvent(self, event):
@@ -72,61 +89,86 @@ class ImportFeature(QgsMapTool):
         point = self.iface.mapCanvas().getCoordinateTransform().toMapCoordinates(x, y)
         featDest = self.getFeatureByPoint(QgsGeometry().fromPoint(point), self.destinationLayer)
         fields = featDest.fields()
-        for sceneItem in self.iface.mapCanvas().scene().items():
-            if isinstance(sceneItem, QgsRubberBand) and sceneItem == self.iface.mapCanvas().scene().itemAt(x, y):
-                geomToImport = sceneItem.asGeometry()
-                featToAdd = QgsFeature(fields)
-                featToAdd.setGeometry(geomToImport)
-                diffToAdd = QgsFeature(featDest)
-                diffToAdd.setGeometry(featDest.geometry().difference(geomToImport))
-                featToDelete = featDest
-                
-                self.destinationLayer.addFeature(featToAdd)
-                self.destinationLayer.addFeature(diffToAdd)
-                self.destinationLayer.deleteFeature(featToDelete.id())
+        #geomToImport = sceneItem.asGeometry()
+        geomToImport = self.getGeomToImportByPoint(QgsGeometry().fromPoint(point))
+        print type(geomToImport)
+        featToAdd = QgsFeature(fields)
+        featToAdd.setGeometry(geomToImport)
+        print geomToImport.exportToWkt()
+        print 'feat geom empty ? '+str(geomToImport.isGeosEmpty())
+        print 'feat geom valid ? '+str(geomToImport.isGeosValid())
+        
+        diffToAdd = QgsFeature(featDest)
+        diff = featDest.geometry().difference(geomToImport)
+        print 'diff geom valid ? '+str(geomToImport.isGeosValid())
+        if diff.isMultipart():
+            print 'diff multipart'
+            for part in diff.asGeometryCollection ():
+                diffToAdd.setGeometry(part)
+                print 'add part'
+                print self.destinationLayer.addFeature(diffToAdd)
+        else:
+            diffToAdd.setGeometry(diff)
+            print 'add diff'
+            print self.destinationLayer.addFeature(diffToAdd)
+        featToDelete = featDest
+        print 'add feat'
+        print self.destinationLayer.addFeature(featToAdd)
+        print 'delete feat'
+        print self.destinationLayer.deleteFeature(featToDelete.id())
         self.destinationLayer.endEditCommand()
         self.iface.mapCanvas().refresh()
-        
-    def canvasMoveEvent(self, event):
-        x = event.pos().x()
-        y = event.pos().y()
-        for sceneItem in self.iface.mapCanvas().scene().items():
-            if isinstance(sceneItem, QgsRubberBand):
-                if sceneItem == self.iface.mapCanvas().scene().itemAt(x, y):
-                    return
-                else:
-                    self.iface.mapCanvas().scene().removeItem(sceneItem)
-        
-        point = self.iface.mapCanvas().getCoordinateTransform().toMapCoordinates(x, y)
-        feat = self.getGeomToImportByPoint(QgsGeometry().fromPoint(point))
-        if feat == None:
-            return
-        r = QgsRubberBand(self.iface.mapCanvas(), True)  # True = a polygon
-        r.setToGeometry(QgsGeometry.fromPolygon(feat.asPolygon()), None)
-        r.setColor(QColor(255, 71, 25))
-        r.setFillColor(QColor(255, 71, 25, 160))
-        r.setWidth(3)
-        
-        
-        
-    # import feature into destination layer
-    def addFeature(self, feature, destLayer, attrValues = None):
-        #print attrValues
-        print 'feature to add validity : '+str(feature.isValid())
-        #self.destinationLayer.setSelectedFeatures([feature.id()])
-        #print self.destinationLayer.capabilitiesString()
-        successOnAdd = destLayer.addFeature(feature)
-        print successOnAdd
-        #print 'add feature'
-        #print successOnAdd
-        if successOnAdd == True:
-            # Get newly added feature
-            if not attrValues == None:
-                
-                feature.setAttributes(attrValues)
-                destLayer.updateFeature(feature)
-                
-            #print 'fin : ' +str(fid)
-        else:
-            #print 'Adding feature failed'
-            return False
+    #===========================================================================
+    # def canvasMoveEvent(self, event):
+    #     
+    #     for sceneItem in self.iface.mapCanvas().scene().items():
+    #         if isinstance(sceneItem, QgsRubberBand):
+    #             self.iface.mapCanvas().scene().removeItem(sceneItem)
+    #     if self.moveLocked:
+    #         return
+    #      
+    #     self.moveLocked = True
+    #      
+    #     x = event.pos().x()
+    #     y = event.pos().y()
+    #     for sceneItem in self.iface.mapCanvas().scene().items():
+    #         if isinstance(sceneItem, QgsRubberBand):
+    #             self.iface.mapCanvas().scene().removeItem(sceneItem)
+    #             #print 'there is a rb'
+    #             '''if sceneItem == self.iface.mapCanvas().scene().itemAt(x, y):
+    #                 print 'we are already in this rb'
+    #                 self.moveLocked = False
+    #                 return
+    #             else:
+    #                 #print 'we have been exiting the rb'
+    #                 self.iface.mapCanvas().scene().removeItem(sceneItem)'''
+    #      
+    #     point = self.iface.mapCanvas().getCoordinateTransform().toMapCoordinates(x, y)
+    #     feat = self.getGeomToImportByPoint(QgsGeometry().fromPoint(point))
+    #     if feat == None:
+    #         #print 'no intersection found'
+    #         self.moveLocked = False
+    #         return
+    #     #print 'rb will be create'
+    #     r = QgsRubberBand(self.iface.mapCanvas(), False) # True = a polygon
+    #     r2 = QgsRubberBand(self.iface.mapCanvas(), False)
+    #     
+    #     #print QgsGeometry.fromPolygon(feat.asPolygon()).exportToWkt()
+    #     #r.setToGeometry(QgsGeometry.fromPolygon(feat.asPolygon()), None)
+    #     
+    #     geom = [[QgsPoint(785077.40631783090066165,6528218.61511803232133389), QgsPoint(784866.84519791696220636,6528060.64310676883906126), QgsPoint(784858.38920185202732682,6528223.98820148501545191), QgsPoint(785077.40631783090066165,6528218.61511803232133389)]]
+    #     geom2 = [[QgsPoint(784892,6528197), QgsPoint(784944,6528168), QgsPoint(784905,6528122), QgsPoint(784892,6528197)]]
+    #     r.setToGeometry(QgsGeometry.fromPolygon(geom), None)
+    #     r2.setToGeometry(QgsGeometry.fromPolygon(geom2), None)
+    #     r.setColor(QColor(255, 71, 25, 160))
+    #     r2.setColor(QColor(255, 255, 255))
+    #     #r.setBorderColor(QColor(255, 71, 25))
+    #     r.setWidth(3)
+    #     r2.setWidth(3)
+    #     
+    #     
+    #     #print 'rb created'
+    #     #QgsApplication.processEvents()
+    #     self.moveLocked = False
+    #     
+    #===========================================================================
