@@ -26,3 +26,4 @@ Lorsqu'une release est prête:
 * Générer MappingTools.zip dans le répertoire de dépôt avec la commande 'make zip'
 * Remplacer MappingTools.zip dans le repository par celui généré précédamment
 * Modifier la version dans le fichier MappingTools.xml du repository publie la mise à jour. Renseigner dans ce même fichier les infos de mise à jour.
+![Texte alternatif](http://gitlab.dockerforge.ign.fr/environnement/qgis_mapping_tools/blob/master/fusion_icon.png)
