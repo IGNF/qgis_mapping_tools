@@ -54,11 +54,9 @@ class ImportFeature(QgsMapTool):
     def getGeomToImportByPoint(self, point):
         sourceFeature = self.getFeatureByPoint(point, self.iface.mapCanvas().currentLayer())
         if sourceFeature == None:
-            print 'pas de feature source'
             return None
         destFeature =  self.getFeatureByPoint(point, self.destinationLayer)
         if destFeature == None:
-            print 'pas de feature dest'
             return None
         
         self.iface.mapCanvas().currentLayer().setSelectedFeatures([sourceFeature])
@@ -68,11 +66,6 @@ class ImportFeature(QgsMapTool):
         destGeom = destFeature.geometry()
         
         intersection = QgsGeometry(destGeom.intersection(sourceGeom))
-        print 'SOURCE' + str(sourceGeom.exportToWkt())
-        print 'DEST' + str(destGeom.exportToWkt())
-        print 'INTERSECTION WKT : '+str(intersection.exportToWkt())
-        if intersection == None:
-            print 'intersection none'
         if intersection.isMultipart():
             '''print 'inters multipart'
             for part in intersection.asGeometryCollection():
@@ -87,37 +80,26 @@ class ImportFeature(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
         point = self.iface.mapCanvas().getCoordinateTransform().toMapCoordinates(x, y)
-        sourceFeature = self.getFeatureByPoint(QgsGeometry().fromPoint(point), self.iface.mapCanvas().currentLayer())
         featDest = self.getFeatureByPoint(QgsGeometry().fromPoint(point), self.destinationLayer)
         fields = featDest.fields()
         #geomToImport = sceneItem.asGeometry()
         geomToImport = self.getGeomToImportByPoint(QgsGeometry().fromPoint(point))
         
-        print type(geomToImport)
         featToAdd = QgsFeature(fields)
         featToAdd.setGeometry(geomToImport)
-        print geomToImport.exportToWkt()
-        print 'feat geom empty ? '+str(geomToImport.isGeosEmpty())
-        print 'feat geom valid ? '+str(geomToImport.isGeosValid())
         
         diffToAdd = QgsFeature(featDest)
         diff = featDest.geometry().difference(geomToImport)
-        print 'diff geom valid ? '+str(geomToImport.isGeosValid())
         if diff.isMultipart():
-            print 'diff multipart'
             for part in diff.asGeometryCollection ():
                 diffToAdd.setGeometry(part)
-                print 'add part'
-                print self.destinationLayer.addFeature(diffToAdd)
+                self.destinationLayer.addFeature(diffToAdd)
         else:
             diffToAdd.setGeometry(diff)
-            print 'add diff'
-            print self.destinationLayer.addFeature(diffToAdd)
+            self.destinationLayer.addFeature(diffToAdd)
         featToDelete = featDest
-        print 'add feat'
-        print self.destinationLayer.addFeature(featToAdd)
-        print 'delete feat'
-        print self.destinationLayer.deleteFeature(featToDelete.id())
+        self.destinationLayer.addFeature(featToAdd)
+        self.destinationLayer.deleteFeature(featToDelete.id())
         self.destinationLayer.endEditCommand()
         self.iface.mapCanvas().refresh()
     #===========================================================================
