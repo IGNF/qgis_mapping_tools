@@ -1,11 +1,13 @@
 from qgis.core import *
 from qgis.gui import *
+from PyQt4.uic import *
 from qgis.utils import iface
-from PyQt4.QtGui import QCursor, QPixmap, QColor, QGraphicsScene
+from PyQt4.QtGui import QCursor, QPixmap, QColor, QGraphicsScene, QListWidget
 from PyQt4.QtCore import Qt
 import processing
 from common import Common
 from ogr import Layer
+import os.path
 
 
 class ImportFeature(QgsMapTool):
@@ -13,23 +15,50 @@ class ImportFeature(QgsMapTool):
         super(QgsMapTool, self).__init__(iface.mapCanvas())
         self.iface = iface
         self.activated.connect(self.activateImportFeature)
-        self.activated.connect(self.deactivateImportFeature)
+        self.deactivated.connect(self.deactivateImportFeature)
         self.moveLocked=False
+        # initialize plugin directory
+        self.plugin_dir = os.path.dirname(__file__)
+        self.importFeatureSelector = loadUi( os.path.join( self.plugin_dir, "importFeatureSelector.ui" ) )
 
     def activateImportFeature(self):
         for layer in self.iface.mapCanvas().layers():
-            if layer.isEditable():
+            if layer == self.iface.mapCanvas().currentLayer():
                 self.destinationLayer = layer
                 break
         self.iface.mapCanvas().setCursor(Qt.CrossCursor)
         self.updateSpIdx(self.iface.mapCanvas().currentLayer())
         self.iface.mapCanvas().currentLayerChanged.connect(self.updateSpIdx)
+        # show the dialog
+        
+        self.importFeatureSelector.show()
+        QgsMapLayerRegistry.instance().layersRemoved.connect(self.updateSourceLayerSelector)
+        QgsMapLayerRegistry.instance().legendLayersAdded.connect(self.updateSourceLayerSelector)
+        self.iface.mapCanvas().currentLayerChanged.connect(self.updateSourceLayerSelector)
+        self.updateSourceLayerSelector()
         
     def deactivateImportFeature(self):
         try:
+            print 'deactivate success'
+            
+            QgsMapLayerRegistry.instance().layersRemoved.disconnect(self.updateSourceLayerSelector)
+            QgsMapLayerRegistry.instance().legendLayersAdded.disconnect(self.updateSourceLayerSelector)
+            self.iface.mapCanvas().currentLayerChanged.disconnect(self.updateSourceLayerSelector)
             self.iface.mapCanvas().currentLayerChanged.disconnect(self.updateSpIdx)
+            self.importFeatureSelector.close()
         except:
             pass
+
+                
+    def updateSourceLayerSelector(self):
+        self.importFeatureSelector.findChildren(QListWidget)[0].clear()
+        layers = self.iface.legendInterface().layers()
+
+        for layer in layers:
+            layerType = layer.type()
+            if layerType == QgsMapLayer.VectorLayer and layer != self.iface.mapCanvas().currentLayer():
+                self.importFeatureSelector.findChildren(QListWidget)[0].addItem(layer.name())
+        self.importFeatureSelector.findChildren(QListWidget)[0].setCurrentRow(0)
     
     def updateSpIdx(self, currentLayer):
         if currentLayer == None:
@@ -37,22 +66,22 @@ class ImportFeature(QgsMapTool):
         self.index = QgsSpatialIndex(currentLayer.getFeatures())
     
     def getFeatureByPoint(self, point, layer):
-        if layer == self.iface.mapCanvas().currentLayer():
-            intersectFeatIds = self.index.nearestNeighbor(point.asPoint(),0)
-            for fId in intersectFeatIds:
-                req = QgsFeatureRequest(fId)
-                for f in layer.getFeatures(req):
-                    if f.geometry().intersects(point):
-                        return f
-        else:
-            for feat in layer.getFeatures():
-                featGeom= feat.geometry()
-                if featGeom.intersects(point):
-                    return feat
+        for feat in layer.getFeatures():
+            featGeom= feat.geometry()
+            if featGeom.intersects(point):
+                return feat
         return None
 
     def getGeomToImportByPoint(self, point):
-        sourceFeature = self.getFeatureByPoint(point, self.iface.mapCanvas().currentLayer())
+        sourceLayerName = self.importFeatureSelector.findChildren(QListWidget)[0].currentItem().text()
+        for lyr in self.iface.mapCanvas().layers():
+            if lyr.name()==sourceLayerName:
+                sourceLayer = lyr
+                break
+        if not sourceLayer:
+            return None
+        
+        sourceFeature = self.getFeatureByPoint(point, sourceLayer)
         if sourceFeature == None:
             return None
         destFeature =  self.getFeatureByPoint(point, self.destinationLayer)
@@ -81,6 +110,8 @@ class ImportFeature(QgsMapTool):
         y = event.pos().y()
         point = self.iface.mapCanvas().getCoordinateTransform().toMapCoordinates(x, y)
         featDest = self.getFeatureByPoint(QgsGeometry().fromPoint(point), self.destinationLayer)
+        if featDest == None:
+            return
         fields = featDest.fields()
         #geomToImport = sceneItem.asGeometry()
         geomToImport = self.getGeomToImportByPoint(QgsGeometry().fromPoint(point))

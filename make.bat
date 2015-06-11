@@ -21,9 +21,11 @@ set PY_FILES= ^
 	import_feature.py ^
 	fusion.py ^
 	common.py ^
-	__init__.py
+	__init__.py ^
+	importFeatureSelector.py ^
+	MappingTools_dialog.py
 
-set UI_FILES=
+set UI_FILES=importFeatureSelector.ui
 
 set EXTRAS=metadata.txt
 
@@ -55,7 +57,9 @@ if "%1" == "compile" (
 	echo.------------------------------------------
 	echo.Compiling resources.
 	echo.------------------------------------------
-	rem pyuic4 -o outil_nomade_dialog.py  outil_nomade_dialog_base.ui
+	rem for %%i in (%UI_FILES%) DO (
+	rem 	pyuic4 -o %%i.py %%i.ui
+	rem )
 	pyrcc4 -o resources_rc.py resources.qrc
 	goto end
 )
@@ -114,11 +118,13 @@ if "%1" == "derase" (
 )
 
 if "%1" == "clean" (
+	:clean
 	echo.
 	echo.-----------------------------
 	echo.Removing rcc generated files.
 	echo.-----------------------------
 	if exist %COMPILED_RESOURCE_FILES% del %COMPILED_RESOURCE_FILES%
+	if exist %UI_FILES%.py del %UI_FILES%.py
 	del *.pyc
 	goto end
 )

@@ -44,9 +44,6 @@ class Fusion(QgsMapTool):
             self.r = QgsRubberBand(self.canvas, False)
             self.r.setColor(QColor(255, 71, 25))
             self.r.setWidth(0.2)
-            self.r2 = QgsRubberBand(self.canvas, True)
-            self.r2.setColor(QColor(255, 71, 25, 160))
-            self.r2.setWidth(2)
             x = event.pos().x()
             y = event.pos().y()
             point = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
@@ -69,7 +66,6 @@ class Fusion(QgsMapTool):
                 if f.geometry().intersects(QgsGeometry.fromPoint(QgsPoint(point[0], point[1]))):
                     if self.newFeat == None:
                         self.newFeat = f
-                    self.r2.addGeometry(QgsGeometry.fromPolygon(f.geometry().asPolygon()), None)
         self.pathPointsList.append(QgsPoint(point[0], point[1]))
         self.r.setToGeometry(QgsGeometry.fromPolyline(self.pathPointsList), None)
 
@@ -146,4 +142,3 @@ class Fusion(QgsMapTool):
             pass
         self.pathPointsList = []
         self.canvas.scene().removeItem(self.r)
-        self.canvas.scene().removeItem(self.r2)

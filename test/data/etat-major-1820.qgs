@@ -17,10 +17,10 @@
   <mapcanvas>
     <units>meters</units>
     <extent>
-      <xmin>119500</xmin>
-      <ymin>6839500</ymin>
-      <xmax>140500</xmax>
-      <ymax>6860500</ymax>
+      <xmin>122066.95331695328059141</xmin>
+      <ymin>6837410.31941032037138939</ymin>
+      <xmax>143066.95331695332424715</xmax>
+      <ymax>6858410.31941032037138939</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>1</projections>
@@ -111,7 +111,7 @@
     </maplayer>
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>segment_1620150611101402988</id>
-      <datasource>./-16/segment-16.shp</datasource>
+      <datasource>./etat-major-1820/segment-16.shp</datasource>
       <title></title>
       <abstract></abstract>
       <keywordList>
@@ -347,7 +347,7 @@
     </maplayer>
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>segment_4020150611101243905</id>
-      <datasource>./-40-coherent/segment-40.shp</datasource>
+      <datasource>./etat-major-1820/segment-40.shp</datasource>
       <title></title>
       <abstract></abstract>
       <keywordList>
@@ -374,10 +374,7 @@
         <map-layer-style name=""/>
       </map-layer-style-manager>
       <edittypes>
-        <edittype widgetv2type="TextEdit" name="OUT_ID">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
-        </edittype>
-        <edittype widgetv2type="TextEdit" name="AREA">
+        <edittype widgetv2type="TextEdit" name="Valeur">
           <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
         </edittype>
       </edittypes>
@@ -579,10 +576,7 @@
       <excludeAttributesWFS/>
       <attributeactions/>
       <edittypes>
-        <edittype widgetv2type="TextEdit" name="OUT_ID">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
-        </edittype>
-        <edittype widgetv2type="TextEdit" name="AREA">
+        <edittype widgetv2type="TextEdit" name="Valeur">
           <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
         </edittype>
       </edittypes>
