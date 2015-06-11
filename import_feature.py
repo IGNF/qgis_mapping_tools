@@ -67,7 +67,7 @@ class ImportFeature(QgsMapTool):
         sourceGeom = sourceFeature.geometry()
         destGeom = destFeature.geometry()
         
-        intersection = QgsGeometry(destGeom.intersection(sourceGeom.asPolyline()))
+        intersection = QgsGeometry(destGeom.intersection(sourceGeom))
         print 'SOURCE' + str(sourceGeom.exportToWkt())
         print 'DEST' + str(destGeom.exportToWkt())
         print 'INTERSECTION WKT : '+str(intersection.exportToWkt())
@@ -91,23 +91,9 @@ class ImportFeature(QgsMapTool):
         featDest = self.getFeatureByPoint(QgsGeometry().fromPoint(point), self.destinationLayer)
         fields = featDest.fields()
         #geomToImport = sceneItem.asGeometry()
-        #geomToImport = self.getGeomToImportByPoint(QgsGeometry().fromPoint(point))
-        geometry = QgsGeometry.fromPolygon(featDest.geometry().asPolygon())
-        convertedLine = QgsGeometry.fromPolyline(sourceFeature.geometry().asPolyline())
-        print sourceFeature.geometry().exportToWkt()
-        successOnReshape = featDest.geometry().reshapeGeometry(convertedLine.asPolyline())
-        print 'reshaped ? '+str(successOnReshape)
-        if successOnReshape == 0:
-            # Create a new feature to hold the other half of the split
-            diff = QgsFeature(featDest)
-            # Calculate the difference between the original geometry and the first half of the split
-            diff.setGeometry( geometry.difference(featDest.geometry()))
-            # Add the two halves of the split to the memory layer
-            self.destinationLayer.addFeatures([featDest])
-            self.destinationLayer.addFeatures([diff])
-            
-            
-        '''print type(geomToImport)
+        geomToImport = self.getGeomToImportByPoint(QgsGeometry().fromPoint(point))
+        
+        print type(geomToImport)
         featToAdd = QgsFeature(fields)
         featToAdd.setGeometry(geomToImport)
         print geomToImport.exportToWkt()
@@ -131,7 +117,7 @@ class ImportFeature(QgsMapTool):
         print 'add feat'
         print self.destinationLayer.addFeature(featToAdd)
         print 'delete feat'
-        print self.destinationLayer.deleteFeature(featToDelete.id())'''
+        print self.destinationLayer.deleteFeature(featToDelete.id())
         self.destinationLayer.endEditCommand()
         self.iface.mapCanvas().refresh()
     #===========================================================================
