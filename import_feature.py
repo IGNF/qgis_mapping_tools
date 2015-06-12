@@ -6,7 +6,6 @@ from PyQt4.QtGui import QCursor, QPixmap, QColor, QGraphicsScene, QListWidget
 from PyQt4.QtCore import Qt
 import processing
 from common import Common
-from ogr import Layer
 import os.path
 
 
