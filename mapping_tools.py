@@ -157,10 +157,11 @@ class MappingTools:
             mapTool=fusionMapTool)
         for action in self.iface.mainWindow().findChild(QtGui.QToolBar, 'MappingTools').actions():
             self.setMapToolBehaviour(action)
-        self.manageButtonBehaviour(self.iface.mapCanvas().currentLayer())
-        self.clyr = self.iface.mapCanvas().currentLayer()
-        self.manageButtonBehaviourWithCurLyr = lambda: self.manageButtonBehaviour(self.clyr)
-        self.iface.mapCanvas().currentLayerChanged.connect(self.manageButtonBehaviourWithCurLyr)
+        self.manageButtonBehaviour()
+        #self.clyr = self.iface.mapCanvas().currentLayer()
+        #self.manageButtonBehaviourWithCurLyr = lambda: self.manageButtonBehaviour(self.clyr)
+        #self.iface.mapCanvas().currentLayerChanged.connect(self.manageButtonBehaviourWithCurLyr)
+        self.iface.mapCanvas().currentLayerChanged.connect(self.manageButtonBehaviour)
     
     def findActionByName(self, actionName):
         for tbar in self.iface.mainWindow().findChildren(QtGui.QToolBar):
@@ -173,25 +174,23 @@ class MappingTools:
         action.setCheckable(True)
         
     def unload(self):
-        self.iface.mapCanvas().currentLayerChanged.disconnect(self.manageButtonBehaviourWithCurLyr)
-        if self.enableFusionAction:
+        #self.iface.mapCanvas().currentLayerChanged.disconnect(self.manageButtonBehaviourWithCurLyr)
+        '''if self.enableFusionAction:
             self.iface.mapCanvas().currentLayer().editingStarted.disconnect(self.enableFusionAction)
         if self.disableFusionAction:
             self.iface.mapCanvas().currentLayer().editingStopped.disconnect(self.disableFusionAction)
         if self.enableImportFeatAction:
             self.iface.mapCanvas().currentLayer().editingStarted.disconnect(self.enableImportFeatAction)
         if self.disableImportFeatAction:
-            self.iface.mapCanvas().currentLayer().editingStopped.disconnect(self.disableImportFeatAction)
+            self.iface.mapCanvas().currentLayer().editingStopped.disconnect(self.disableImportFeatAction)'''
         '''Removes the plugin menu item and icon from QGIS GUI.'''
         for action in self.iface.mainWindow().findChild(QtGui.QToolBar, 'MappingTools').actions():
             self.iface.removePluginMenu(
                 'Mapping Tools',
                 action)
-            print 'action name : '+action.text()
             self.iface.removeToolBarIcon(action)
-            print 'tbar removed'
             # Unset the map tool in case it's set
-            #self.iface.mapCanvas().unsetMapTool(self.mapTools[action])
+            self.iface.mapCanvas().unsetMapTool(self.mapTools[action])
         
         # Useful to let QGIS processing
         QgsApplication.processEvents()
@@ -207,8 +206,8 @@ class MappingTools:
         self.iface.mapCanvas().setMapTool(self.mapTools[self.findActionByName('Fusion')])
         
         
-    def manageButtonBehaviour(self, previousCurrentlayer):
-        if previousCurrentlayer:
+    def manageButtonBehaviour(self):
+        '''if previousCurrentlayer:
             if self.enableFusionAction:
                 previousCurrentlayer.editingStarted.disconnect(self.enableFusionAction)
             if self.disableFusionAction:
@@ -216,33 +215,36 @@ class MappingTools:
             if self.enableImportFeatAction:
                 previousCurrentlayer.editingStarted.disconnect(self.enableImportFeatAction)
             if self.disableImportFeatAction:
-                previousCurrentlayer.editingStopped.disconnect(self.disableImportFeatAction)
+                previousCurrentlayer.editingStopped.disconnect(self.disableImportFeatAction)'''
         currentLayer = self.iface.mapCanvas().currentLayer()
-        self.clyr = currentLayer
+        #self.clyr = currentLayer
         if not currentLayer:
             return
         if currentLayer.isEditable():
-            self.enableAction(self.findActionByName('Fusion'))
-            self.enableAction(self.findActionByName('Import Feature'))
+            self.enableAction()
         else:
-            self.disableAction(self.findActionByName('Fusion'))
-            self.disableAction(self.findActionByName('Import Feature'))
+            self.disableAction()
         
         if type(currentLayer) == QgsVectorLayer:
-            self.enableFusionAction = lambda: self.enableAction(self.findActionByName('Fusion'))
+            '''self.enableFusionAction = lambda: self.enableAction(self.findActionByName('Fusion'))
             self.disableFusionAction = lambda: self.disableAction(self.findActionByName('Fusion'))
             self.enableImportFeatAction = lambda: self.enableAction(self.findActionByName('Import Feature'))
             self.disableImportFeatAction = lambda: self.disableAction(self.findActionByName('Import Feature'))
             currentLayer.editingStarted.connect(self.enableFusionAction)
             currentLayer.editingStopped.connect(self.disableFusionAction)
             currentLayer.editingStarted.connect(self.enableImportFeatAction)
-            currentLayer.editingStopped.connect(self.disableImportFeatAction)
+            currentLayer.editingStopped.connect(self.disableImportFeatAction)'''
+            currentLayer.editingStarted.connect(self.enableAction)
+            currentLayer.editingStopped.connect(self.disableAction)
         
-    def enableAction(self, action):
-        action.setEnabled(True)
+    def enableAction(self):
+        self.findActionByName('Import Feature').setEnabled(True)
+        self.findActionByName('Fusion').setEnabled(True)
         
-    def disableAction(self, action):
-        action.setEnabled(False)
-        self.iface.mapCanvas().unsetMapTool(self.mapTools[action])
+    def disableAction(self):
+        self.findActionByName('Import Feature').setDisabled(True)
+        self.findActionByName('Fusion').setDisabled(True)
+        self.iface.mapCanvas().unsetMapTool(self.mapTools[self.findActionByName('Fusion')])
+        self.iface.mapCanvas().unsetMapTool(self.mapTools[self.findActionByName('Import Feature')])
         if not self.previousActivatedMapTool == None:
             self.iface.mapCanvas().setMapTool(self.previousActivatedMapTool)

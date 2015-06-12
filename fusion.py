@@ -15,14 +15,12 @@ class Fusion(QgsMapTool):
         self.deactivated.connect(self.deactivateFusion)
 
     def activateFusion(self):
-        print 'act fus'
         self.canvas.setCursor(self.cursor)
         self.canvas.setMouseTracking(False)
         self.updateSpIdx(self.canvas.currentLayer())
         self.canvas.currentLayerChanged.connect(self.updateSpIdx)
         
     def deactivateFusion(self):
-        print 'deact fus'
         self.canvas.setMouseTracking(True)
         try:
             self.canvas.currentLayerChanged.disconnect(self.updateSpIdx)
@@ -126,14 +124,12 @@ class Fusion(QgsMapTool):
 
     def featureAddedEvent(self, feature):
         
-        print 'feat add'
         if self.canvas.currentLayer():
             req = QgsFeatureRequest(feature)
             for f in self.canvas.currentLayer().getFeatures(req):
                 self.index.insertFeature({feature: f}.values()[0])
 
     def featureDeletedEvent(self, feature):
-        print 'feat del'
         if self.canvas.currentLayer():
             req = QgsFeatureRequest(feature)
             for f in self.canvas.currentLayer().getFeatures(req):
