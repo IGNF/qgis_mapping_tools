@@ -22,6 +22,7 @@ class ImportFeature(QgsMapTool):
         self.importFeatureSelector = loadUi( os.path.join( self.plugin_dir, "importFeatureSelector.ui" ) )
 
     def activateImportFeature(self):
+        print 'act if'
         for layer in self.iface.mapCanvas().layers():
             if layer == self.iface.mapCanvas().currentLayer():
                 self.destinationLayer = layer
@@ -38,16 +39,12 @@ class ImportFeature(QgsMapTool):
         self.updateSourceLayerSelector()
         
     def deactivateImportFeature(self):
-        try:
-            print 'deactivate success'
-            
-            QgsMapLayerRegistry.instance().layersRemoved.disconnect(self.updateSourceLayerSelector)
-            QgsMapLayerRegistry.instance().legendLayersAdded.disconnect(self.updateSourceLayerSelector)
-            self.iface.mapCanvas().currentLayerChanged.disconnect(self.updateSourceLayerSelector)
-            self.iface.mapCanvas().currentLayerChanged.disconnect(self.updateSpIdx)
-            self.importFeatureSelector.close()
-        except:
-            pass
+        print 'deact if'
+        QgsMapLayerRegistry.instance().layersRemoved.disconnect(self.updateSourceLayerSelector)
+        QgsMapLayerRegistry.instance().legendLayersAdded.disconnect(self.updateSourceLayerSelector)
+        self.iface.mapCanvas().currentLayerChanged.disconnect(self.updateSourceLayerSelector)
+        self.iface.mapCanvas().currentLayerChanged.disconnect(self.updateSpIdx)
+        self.importFeatureSelector.close()
 
                 
     def updateSourceLayerSelector(self):

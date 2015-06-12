@@ -351,10 +351,8 @@ class TestMappingTools(object):
         # Simulate click on plugin fusion button
         self.clickOnWidgetByActionName('Import Feature')
 
-        iface.setActiveLayer(layerSource)
-
         # Move and click on the feature to import
-        self.clickOnMapPoint(QgsPoint(784803,6527984))
+        self.clickOnMapPoint(QgsPoint(785519,6528705))
 
         # Feature must have been added
         if not self.printTest(38, self.featuresCount(layerDest), 'Import feature', 'Features count'):
@@ -389,10 +387,10 @@ class TestMappingTools(object):
             return
 
         # Clear layers
-        QgsMapLayerRegistry.instance().removeAllMapLayers()
+        #QgsMapLayerRegistry.instance().removeAllMapLayers()
         iface.mapCanvas().refresh()
         # Close python console
-        iface.actionShowPythonDialog().trigger()
+        #iface.actionShowPythonDialog().trigger()
 
 
 TestMappingTools().testFusion()

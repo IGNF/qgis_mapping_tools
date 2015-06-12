@@ -26,7 +26,7 @@ tags=
 
 homepage=http://gitlab.dockerforge.ign.fr/environnement/qgis_mapping_tools
 tracker=http://gitlab.dockerforge.ign.fr/environnement/qgis_mapping_tools/issues
-repository=http://dockerforge.ign.fr:10080/environnement/qgis_mapping_tools.git
+repository=http://gitlab.dockerforge.ign.fr/environnement/qgis_mapping_tools.git
 category=Plugins
 icon=icon.png
 # experimental flag

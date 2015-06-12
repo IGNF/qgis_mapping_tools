@@ -23,7 +23,7 @@
 from PyQt4.QtCore import *
 from PyQt4 import QtGui
 
-from qgis.core import QgsMapLayerRegistry, QgsMapLayer, QgsVectorLayer
+from qgis.core import QgsMapLayerRegistry, QgsMapLayer, QgsVectorLayer, QgsApplication
 
 # Initialize Qt resources from file resources.py
 import resources_rc
@@ -50,6 +50,10 @@ class MappingTools:
         self.toolbar = self.iface.addToolBar(u'MappingTools')
         self.toolbar.setObjectName(u'MappingTools')
         self.previousActivatedMapTool = None
+        self.enableFusionAction = None
+        self.disableFusionAction = None
+        self.enableImportFeatAction = None
+        self.disableImportFeatAction = None
 
     def add_action(
         self,
@@ -151,12 +155,12 @@ class MappingTools:
             add_to_menu=False,
             parent=self.iface.mainWindow(),
             mapTool=fusionMapTool)
-        print len(self.iface.mainWindow().findChild(QtGui.QToolBar, 'MappingTools').actions())
         for action in self.iface.mainWindow().findChild(QtGui.QToolBar, 'MappingTools').actions():
-            print self.mapTools
             self.setMapToolBehaviour(action)
-            self.manageButtonBehaviour()
-        self.iface.mapCanvas().currentLayerChanged.connect(self.manageButtonBehaviour)
+        self.manageButtonBehaviour(self.iface.mapCanvas().currentLayer())
+        self.clyr = self.iface.mapCanvas().currentLayer()
+        self.manageButtonBehaviourWithCurLyr = lambda: self.manageButtonBehaviour(self.clyr)
+        self.iface.mapCanvas().currentLayerChanged.connect(self.manageButtonBehaviourWithCurLyr)
     
     def findActionByName(self, actionName):
         for tbar in self.iface.mainWindow().findChildren(QtGui.QToolBar):
@@ -169,16 +173,29 @@ class MappingTools:
         action.setCheckable(True)
         
     def unload(self):
+        self.iface.mapCanvas().currentLayerChanged.disconnect(self.manageButtonBehaviourWithCurLyr)
+        if self.enableFusionAction:
+            self.iface.mapCanvas().currentLayer().editingStarted.disconnect(self.enableFusionAction)
+        if self.disableFusionAction:
+            self.iface.mapCanvas().currentLayer().editingStopped.disconnect(self.disableFusionAction)
+        if self.enableImportFeatAction:
+            self.iface.mapCanvas().currentLayer().editingStarted.disconnect(self.enableImportFeatAction)
+        if self.disableImportFeatAction:
+            self.iface.mapCanvas().currentLayer().editingStopped.disconnect(self.disableImportFeatAction)
         '''Removes the plugin menu item and icon from QGIS GUI.'''
         for action in self.iface.mainWindow().findChild(QtGui.QToolBar, 'MappingTools').actions():
             self.iface.removePluginMenu(
                 'Mapping Tools',
                 action)
+            print 'action name : '+action.text()
             self.iface.removeToolBarIcon(action)
+            print 'tbar removed'
             # Unset the map tool in case it's set
-            self.iface.mapCanvas().unsetMapTool(self.mapTools[action])
+            #self.iface.mapCanvas().unsetMapTool(self.mapTools[action])
+        
+        # Useful to let QGIS processing
+        QgsApplication.processEvents()
             
-        self.iface.mapCanvas().currentLayerChanged.disconnect(self.manageButtonBehaviour)
     def importFeature(self):
         if self.iface.mapCanvas().mapTool().action() not in self.iface.mainWindow().findChild(QtGui.QToolBar, 'MappingTools').actions():
             self.previousActivatedMapTool = self.iface.mapCanvas().mapTool()
@@ -190,8 +207,18 @@ class MappingTools:
         self.iface.mapCanvas().setMapTool(self.mapTools[self.findActionByName('Fusion')])
         
         
-    def manageButtonBehaviour(self):
+    def manageButtonBehaviour(self, previousCurrentlayer):
+        if previousCurrentlayer:
+            if self.enableFusionAction:
+                previousCurrentlayer.editingStarted.disconnect(self.enableFusionAction)
+            if self.disableFusionAction:
+                previousCurrentlayer.editingStopped.disconnect(self.disableFusionAction)
+            if self.enableImportFeatAction:
+                previousCurrentlayer.editingStarted.disconnect(self.enableImportFeatAction)
+            if self.disableImportFeatAction:
+                previousCurrentlayer.editingStopped.disconnect(self.disableImportFeatAction)
         currentLayer = self.iface.mapCanvas().currentLayer()
+        self.clyr = currentLayer
         if not currentLayer:
             return
         if currentLayer.isEditable():
@@ -202,10 +229,14 @@ class MappingTools:
             self.disableAction(self.findActionByName('Import Feature'))
         
         if type(currentLayer) == QgsVectorLayer:
-            currentLayer.editingStarted.connect(lambda: self.enableAction(self.findActionByName('Fusion')))
-            currentLayer.editingStopped.connect(lambda: self.disableAction(self.findActionByName('Fusion')))
-            currentLayer.editingStarted.connect(lambda: self.enableAction(self.findActionByName('Import Feature')))
-            currentLayer.editingStopped.connect(lambda: self.disableAction(self.findActionByName('Import Feature')))
+            self.enableFusionAction = lambda: self.enableAction(self.findActionByName('Fusion'))
+            self.disableFusionAction = lambda: self.disableAction(self.findActionByName('Fusion'))
+            self.enableImportFeatAction = lambda: self.enableAction(self.findActionByName('Import Feature'))
+            self.disableImportFeatAction = lambda: self.disableAction(self.findActionByName('Import Feature'))
+            currentLayer.editingStarted.connect(self.enableFusionAction)
+            currentLayer.editingStopped.connect(self.disableFusionAction)
+            currentLayer.editingStarted.connect(self.enableImportFeatAction)
+            currentLayer.editingStopped.connect(self.disableImportFeatAction)
         
     def enableAction(self, action):
         action.setEnabled(True)
