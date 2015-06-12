@@ -1,4 +1,4 @@
-#! <?xml version="1.0" encoding="utf-8" ?>
+#! <?xml version="1.0" encoding="windows-1252" ?>
 #! <WORKSPACE
 #    
 #    
@@ -13,7 +13,7 @@
 #    
 #! PASSWORD=""
 #! ATTR_TYPE_ENCODING="SDF"
-#! VIEW_POSITION="-2224 55"
+#! VIEW_POSITION="-3192 51"
 #! SHOW_INFO_NODES="true"
 #! FME_STROKE_MAX_DEVIATION="0"
 #! BEGIN_PYTHON=""
@@ -31,13 +31,13 @@
 #! USAGE=""
 #! END_PYTHON=""
 #! HISTORY=""
-#! FME_DOCUMENT_PRIORGUID="5ccab182-2f8a-11e4-8ae1-fa47671d9eeb,03f0473a-2f98-11e4-8ae1-fa47671d9eeb,ac17841a-31a9-11e4-971a-c33045dd10ac,47c649a8-4ef8-11e4-859f-aca7187b4de9,44ce3e4e-4f80-11e4-84fb-d113da6dc5b6,744ef716-4f8b-11e4-84fb-d113da6dc5b6,c372cff0-59f1-11e4-99d3-d0f8850c3991,04bedc68-5a08-11e4-99d3-d0f8850c3991,a107c4fe-5a08-11e4-99d3-d0f8850c3991,e48f699c-5a8b-11e4-9dc4-f4c2160b068b,2d5a746e-5a8c-11e4-9dc4-f4c2160b068b,6f2470f2-5a8c-11e4-9dc4-f4c2160b068b,a8c98b30-5a8c-11e4-9dc4-f4c2160b068b,315c512a-5a8e-11e4-925f-c357b87c9848,93dbb11a-5a8e-11e4-925f-c357b87c9848,24a5249c-5a8f-11e4-925f-c357b87c9848,3e291efa-5a8f-11e4-925f-c357b87c9848,4ade1ce0-6043-11e4-9dd6-8d68eb08768a,bdfdb4a6-604d-11e4-9dd6-8d68eb08768a,8694f8ca-604e-11e4-9dd6-8d68eb08768a,23644a4c-60cd-11e4-9dd6-8d68eb08768a,80315fcc-70bc-11e4-9516-8efb604d38bd"
-#! DOC_TOP_LEFT="-3153 -1641"
+#! FME_DOCUMENT_PRIORGUID="5ccab182-2f8a-11e4-8ae1-fa47671d9eeb,03f0473a-2f98-11e4-8ae1-fa47671d9eeb,ac17841a-31a9-11e4-971a-c33045dd10ac,47c649a8-4ef8-11e4-859f-aca7187b4de9,44ce3e4e-4f80-11e4-84fb-d113da6dc5b6,744ef716-4f8b-11e4-84fb-d113da6dc5b6,c372cff0-59f1-11e4-99d3-d0f8850c3991,04bedc68-5a08-11e4-99d3-d0f8850c3991,a107c4fe-5a08-11e4-99d3-d0f8850c3991,e48f699c-5a8b-11e4-9dc4-f4c2160b068b,2d5a746e-5a8c-11e4-9dc4-f4c2160b068b,6f2470f2-5a8c-11e4-9dc4-f4c2160b068b,a8c98b30-5a8c-11e4-9dc4-f4c2160b068b,315c512a-5a8e-11e4-925f-c357b87c9848,93dbb11a-5a8e-11e4-925f-c357b87c9848,24a5249c-5a8f-11e4-925f-c357b87c9848,3e291efa-5a8f-11e4-925f-c357b87c9848,4ade1ce0-6043-11e4-9dd6-8d68eb08768a,bdfdb4a6-604d-11e4-9dd6-8d68eb08768a,8694f8ca-604e-11e4-9dd6-8d68eb08768a,23644a4c-60cd-11e4-9dd6-8d68eb08768a,80315fcc-70bc-11e4-9516-8efb604d38bd,aee5e877-95a0-46ae-b16e-1ea23ad513f4"
+#! DOC_TOP_LEFT="-3144 -1801"
 #! REQUIREMENTS_KEYWORD=""
 #! SOURCE_ROUTING_FILE=""
 #! DESTINATION_ROUTING_FILE=""
 #! DESTINATION="NONE"
-#! LAST_SAVE_DATE="2015-06-11T14:32:32"
+#! LAST_SAVE_DATE="2015-06-12T15:34:45"
 #! FME_IMPLICIT_CSMAP_REPROJECTION_MODE="Auto"
 #! WORKSPACE_VERSION="1"
 #! SOURCE="NONE"
@@ -47,8 +47,8 @@
 #! LOG_FILE=""
 #! REQUIREMENTS=""
 #! BEGIN_TCL=""
-#! DOC_EXTENTS="4420 1614"
-#! FME_DOCUMENT_GUID="aee5e877-95a0-46ae-b16e-1ea23ad513f4"
+#! DOC_EXTENTS="4222 1774"
+#! FME_DOCUMENT_GUID="de534fb4-6de6-4520-8bc3-410147a8648e"
 #! SHOW_ANNOTATIONS="true"
 #! IGNORE_READER_FAILURE="No"
 #! WARN_INVALID_XFORM_PARAM="Yes"
@@ -676,7 +676,7 @@
 #! IS_EDITABLE="false"
 #! IDENTIFIER="32"
 #! FEAT_GEOMTYPE="shape_polygon"
-#! POSITION="-3153 -1252"
+#! POSITION="-3144 -1252"
 #! ORDER="5e+014"
 #! COLLAPSED="false"
 #! KEYWORD="SHAPE_2"
@@ -696,7 +696,7 @@
 #! IS_EDITABLE="true"
 #! IDENTIFIER="35"
 #! FEAT_GEOMTYPE="shape_polygon"
-#! POSITION="1267 -1355"
+#! POSITION="1078 -1299"
 #! ORDER="5e+014"
 #! COLLAPSED="false"
 #! KEYWORD="SHAPE_3"
@@ -704,6 +704,7 @@
 #! FANOUT="Yes"
 #! FANOUT_ID_ATTR="Liste_Fils{0}.resultat"
 #! >
+#! <FEAT_ATTRIBUTE ATTR_NAME="Valeur" ATTR_TYPE="number(30,0)" ATTR_HAS_PORT="true" ATTR_VALUE=""/>
 #! </FEATURE_TYPE>
 #! </FEATURE_TYPES>
 #! <FMESERVER>
@@ -747,6 +748,7 @@
 #! <XFORM_ATTR ATTR_NAME="Surf_Avant" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Ident" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="fme_basename" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="0" />
@@ -790,6 +792,7 @@
 #! <OUTPUT_FEAT NAME="OUTPUT"/>
 #! <FEAT_COLLAPSED COLLAPSED="0"/>
 #! <XFORM_ATTR ATTR_NAME="Valeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="fme_basename" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Ident" IS_USER_CREATED="false" FEAT_INDEX="0" />
@@ -854,6 +857,7 @@
 #! <OUTPUT_FEAT NAME="OUTPUT"/>
 #! <FEAT_COLLAPSED COLLAPSED="0"/>
 #! <XFORM_ATTR ATTR_NAME="Valeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="fme_basename" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Ident" IS_USER_CREATED="false" FEAT_INDEX="0" />
@@ -877,6 +881,7 @@
 #! <XFORM_ATTR ATTR_NAME="Surf_Avant" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Ident" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="fme_basename" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="0" />
@@ -903,6 +908,7 @@
 #! <XFORM_ATTR ATTR_NAME="Surf_Avant" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Ident" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="fme_basename" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="0" />
@@ -929,6 +935,7 @@
 #! <XFORM_ATTR ATTR_NAME="Surf_Avant" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Ident" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="fme_basename" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="0" />
@@ -940,6 +947,7 @@
 #! <XFORM_ATTR ATTR_NAME="Surf_Avant" IS_USER_CREATED="false" FEAT_INDEX="1" />
 #! <XFORM_ATTR ATTR_NAME="Ident" IS_USER_CREATED="false" FEAT_INDEX="1" />
 #! <XFORM_ATTR ATTR_NAME="Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="1" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="1" />
 #! <XFORM_ATTR ATTR_NAME="fme_basename" IS_USER_CREATED="false" FEAT_INDEX="1" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="1" />
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="1" />
@@ -967,23 +975,23 @@
 #! <XFORM_ATTR ATTR_NAME="Surf_Avant" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Ident" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="fme_basename" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Surf_Apres" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Ratio" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <OUTPUT_FEAT NAME="NOT_MERGED"/>
-#! <FEAT_COLLAPSED COLLAPSED="1"/>
 #! <XFORM_ATTR ATTR_NAME="Valeur" IS_USER_CREATED="false" FEAT_INDEX="1" />
 #! <XFORM_ATTR ATTR_NAME="Surf_Avant" IS_USER_CREATED="false" FEAT_INDEX="1" />
 #! <XFORM_ATTR ATTR_NAME="Ident" IS_USER_CREATED="false" FEAT_INDEX="1" />
 #! <XFORM_ATTR ATTR_NAME="Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="1" />
 #! <OUTPUT_FEAT NAME="REFERENCED"/>
-#! <FEAT_COLLAPSED COLLAPSED="2"/>
 #! <XFORM_ATTR ATTR_NAME="Valeur" IS_USER_CREATED="false" FEAT_INDEX="2" />
 #! <XFORM_ATTR ATTR_NAME="Surf_Avant" IS_USER_CREATED="false" FEAT_INDEX="2" />
 #! <XFORM_ATTR ATTR_NAME="Ident" IS_USER_CREATED="false" FEAT_INDEX="2" />
 #! <XFORM_ATTR ATTR_NAME="Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="2" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="2" />
 #! <XFORM_ATTR ATTR_NAME="fme_basename" IS_USER_CREATED="false" FEAT_INDEX="2" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="2" />
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="2" />
@@ -991,22 +999,22 @@
 #! <XFORM_ATTR ATTR_NAME="Ratio" IS_USER_CREATED="false" FEAT_INDEX="2" />
 #! <XFORM_ATTR ATTR_NAME="numReferences" IS_USER_CREATED="false" FEAT_INDEX="2" />
 #! <OUTPUT_FEAT NAME="UNREFERENCED"/>
-#! <FEAT_COLLAPSED COLLAPSED="3"/>
 #! <XFORM_ATTR ATTR_NAME="Valeur" IS_USER_CREATED="false" FEAT_INDEX="3" />
 #! <XFORM_ATTR ATTR_NAME="Surf_Avant" IS_USER_CREATED="false" FEAT_INDEX="3" />
 #! <XFORM_ATTR ATTR_NAME="Ident" IS_USER_CREATED="false" FEAT_INDEX="3" />
 #! <XFORM_ATTR ATTR_NAME="Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="3" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="3" />
 #! <XFORM_ATTR ATTR_NAME="fme_basename" IS_USER_CREATED="false" FEAT_INDEX="3" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="3" />
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="3" />
 #! <XFORM_ATTR ATTR_NAME="Surf_Apres" IS_USER_CREATED="false" FEAT_INDEX="3" />
 #! <XFORM_ATTR ATTR_NAME="Ratio" IS_USER_CREATED="false" FEAT_INDEX="3" />
 #! <OUTPUT_FEAT NAME="DUPLICATE_SUPPLIER"/>
-#! <FEAT_COLLAPSED COLLAPSED="4"/>
 #! <XFORM_ATTR ATTR_NAME="Valeur" IS_USER_CREATED="false" FEAT_INDEX="4" />
 #! <XFORM_ATTR ATTR_NAME="Surf_Avant" IS_USER_CREATED="false" FEAT_INDEX="4" />
 #! <XFORM_ATTR ATTR_NAME="Ident" IS_USER_CREATED="false" FEAT_INDEX="4" />
 #! <XFORM_ATTR ATTR_NAME="Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="4" />
 #! <XFORM_ATTR ATTR_NAME="fme_basename" IS_USER_CREATED="false" FEAT_INDEX="4" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="4" />
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="4" />
@@ -1038,16 +1046,17 @@
 #! <OUTPUT_FEAT NAME="AREA"/>
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Liste_Fils{}.Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
+#! <XFORM_ATTR ATTR_NAME="Liste_Fils{}.resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Liste_Fils{}.resultat" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Liste_Fils{}.Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Liste_Fils{}.Nb_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Nb_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <OUTPUT_FEAT NAME="INTERIOR_LINE"/>
-#! <FEAT_COLLAPSED COLLAPSED="1"/>
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="1" />
 #! <OUTPUT_FEAT NAME="&lt;REJECTED&gt;"/>
 #! <FEAT_COLLAPSED COLLAPSED="2"/>
 #! <XFORM_ATTR ATTR_NAME="Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="2" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="2" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="2" />
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="2" />
 #! <XFORM_ATTR ATTR_NAME="Nb_Fils" IS_USER_CREATED="false" FEAT_INDEX="2" />
@@ -1078,19 +1087,20 @@
 #! <OUTPUT_FEAT NAME="OUTPUT"/>
 #! <FEAT_COLLAPSED COLLAPSED="0"/>
 #! <XFORM_ATTR ATTR_NAME="Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="AttributeKeeper"/>
 #! <XFORM_PARM PARM_NAME="KEEP_LIST" PARM_VALUE=""/>
 #! <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
-#! <XFORM_PARM PARM_NAME="KEEP_ATTRS" PARM_VALUE="Id_Fils,resultat,Id_Pere"/>
+#! <XFORM_PARM PARM_NAME="KEEP_ATTRS" PARM_VALUE="Id_Fils,resultatValeur,resultat,Id_Pere"/>
 #! <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
 #! </TRANSFORMER>
 #! <TRANSFORMER
 #! IDENTIFIER="44"
 #! TYPE="ListConcatenator"
 #! VERSION="1"
-#! POSITION="303 -1626"
+#! POSITION="333 -1801"
 #! ORDER="5e+014"
 #! PARMS_EDITED="true"
 #! ENABLED="true"
@@ -1098,12 +1108,14 @@
 #! <OUTPUT_FEAT NAME="OUTPUT"/>
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Liste_Fils{}.Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
+#! <XFORM_ATTR ATTR_NAME="Liste_Fils{}.resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Liste_Fils{}.resultat" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Liste_Fils{}.Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Liste_Fils{}.Nb_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Nb_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Liste_Fils{0}.resultat" IS_USER_CREATED="false" FEAT_INDEX="0" />
+#! <XFORM_ATTR ATTR_NAME="ValeurDuPere" IS_USER_CREATED="true" FEAT_INDEX="0" ATTR_IS_ENABLED="true" ATTR_VALUE="&lt;at&gt;Value&lt;openparen&gt;Liste_Fils&lt;opencurly&gt;0&lt;closecurly&gt;.resultatValeur&lt;closeparen&gt;"/>
 #! <XFORM_PARM PARM_NAME="VAL_ATTR" PARM_VALUE="Fils"/>
 #! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="ListConcatenator"/>
 #! <XFORM_PARM PARM_NAME="SEP" PARM_VALUE="&lt;solidus&gt;"/>
@@ -1123,6 +1135,7 @@
 #! >
 #! <OUTPUT_FEAT NAME="OUTPUT"/>
 #! <XFORM_ATTR ATTR_NAME="Id_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Id_Pere" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="Nb_Fils" IS_USER_CREATED="false" FEAT_INDEX="0" />
@@ -1146,10 +1159,11 @@
 #! <OUTPUT_FEAT NAME="OUTPUT"/>
 #! <FEAT_COLLAPSED COLLAPSED="0"/>
 #! <XFORM_ATTR ATTR_NAME="Valeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
+#! <XFORM_ATTR ATTR_NAME="resultatValeur" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="fme_basename" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_ATTR ATTR_NAME="resultat" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #! <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="AttributeCopier"/>
-#! <XFORM_PARM PARM_NAME="ATTR_LIST" PARM_VALUE="fme_basename,resultat,&quot;&quot;"/>
+#! <XFORM_PARM PARM_NAME="ATTR_LIST" PARM_VALUE="fme_basename,resultat,&quot;&quot;,Valeur,resultatValeur,&quot;&quot;"/>
 #! </TRANSFORMER>
 #! </TRANSFORMERS>
 #! <FEAT_LINKS>
@@ -1319,6 +1333,13 @@
 #! <BREAKPOINTS>
 #! </BREAKPOINTS>
 #! <ATTR_LINKS>
+#! <ATTR_LINK
+#! IDENTIFIER="65581"
+#! SOURCE_NODE="44"
+#! TARGET_NODE="35"
+#! SOURCE_PORT_DESC="ao 0 9"
+#! TARGET_PORT_DESC="0"
+#! />
 #! </ATTR_LINKS>
 #! <SUBDOCUMENTS>
 #! </SUBDOCUMENTS>
@@ -1685,34 +1706,34 @@ FACTORY_DEF * TeeFactory    FACTORY_NAME Surf_Fils_Avant    INPUT  FEATURE_TYPE 
 
 # -------------------------------------------------------------------------
 
-Tcl2 proc Counter_2_a1b4f63a_f48c_4968_90ca_95ceee7b446b7_createDomain { in_domainName } {    set domainName $in_domainName;    if { {Local} == {Local} }    {       set xFormName [FME_EncodeText {Counter_2_}];       set domainName $xFormName$domainName;    };    return $domainName; }
+Tcl2 proc Counter_2_b676672d_7590_4c10_86e4_f59d8c4d628a6_createDomain { in_domainName } {    set domainName $in_domainName;    if { {Local} == {Local} }    {       set xFormName [FME_EncodeText {Counter_2_}];       set domainName $xFormName$domainName;    };    return $domainName; }
 
-FACTORY_DEF * TeeFactory    FACTORY_NAME Counter_2    INPUT  FEATURE_TYPE Surf_Fils_Avant_OUTPUT    OUTPUT FEATURE_TYPE Counter_2_OUTPUT         "Ident" @Count(fme_encoded,@Tcl2("Counter_2_a1b4f63a_f48c_4968_90ca_95ceee7b446b7_createDomain {counter}"), 1)
+FACTORY_DEF * TeeFactory    FACTORY_NAME Counter_2    INPUT  FEATURE_TYPE Surf_Fils_Avant_OUTPUT    OUTPUT FEATURE_TYPE Counter_2_OUTPUT         "Ident" @Count(fme_encoded,@Tcl2("Counter_2_b676672d_7590_4c10_86e4_f59d8c4d628a6_createDomain {counter}"), 1)
 
 # -------------------------------------------------------------------------
 
-Tcl2 proc Id_Fils_faf9e77f_67c6_4c91_a4f2_3a91cb3de1bd7_doSetAttr {attrText} {    FME_SetAttribute [FME_DecodeText {Id_Fils}] [FME_DecodeText $attrText] }
-FACTORY_DEF * TeeFactory    FACTORY_NAME Id_Fils    INPUT  FEATURE_TYPE Counter_2_OUTPUT    OUTPUT FEATURE_TYPE Id_Fils_OUTPUT        @Tcl2("Id_Fils_faf9e77f_67c6_4c91_a4f2_3a91cb3de1bd7_doSetAttr {@EvaluateExpression(STRING_ENCODED,F<at>Value<openparen>Ident<closeparen>,Id_Fils)} ")
+Tcl2 proc Id_Fils_824fa5ca_04cb_46a8_ae30_53e84761f16e6_doSetAttr {attrText} {    FME_SetAttribute [FME_DecodeText {Id_Fils}] [FME_DecodeText $attrText] }
+FACTORY_DEF * TeeFactory    FACTORY_NAME Id_Fils    INPUT  FEATURE_TYPE Counter_2_OUTPUT    OUTPUT FEATURE_TYPE Id_Fils_OUTPUT        @Tcl2("Id_Fils_824fa5ca_04cb_46a8_ae30_53e84761f16e6_doSetAttr {@EvaluateExpression(STRING_ENCODED,F<at>Value<openparen>Ident<closeparen>,Id_Fils)} ")
 
 FACTORY_DEF * TeeFactory   FACTORY_NAME "Id_Fils OUTPUT Splitter"   INPUT FEATURE_TYPE Id_Fils_OUTPUT   OUTPUT FEATURE_TYPE Id_Fils_OUTPUT_0_kY61e3j2n/I=   OUTPUT FEATURE_TYPE Id_Fils_OUTPUT_1_kY61e3j2n/I=
 # -------------------------------------------------------------------------
 
-FACTORY_DEF * TeeFactory    FACTORY_NAME AttributeCopier    INPUT  FEATURE_TYPE father    OUTPUT FEATURE_TYPE AttributeCopier_OUTPUT         @CopyAttributes(ATTR_LIST_DEF_VAL, fme_basename,resultat,"")
+FACTORY_DEF * TeeFactory    FACTORY_NAME AttributeCopier    INPUT  FEATURE_TYPE father    OUTPUT FEATURE_TYPE AttributeCopier_OUTPUT         @CopyAttributes(ATTR_LIST_DEF_VAL, fme_basename,resultat,"",Valeur,resultatValeur,"")
 
 # -------------------------------------------------------------------------
 
-Tcl2 proc Counter_a71c1ae8_7940_4ccc_ab9c_85e5efa0f4dc7_createDomain { in_domainName } {    set domainName $in_domainName;    if { {Local} == {Local} }    {       set xFormName [FME_EncodeText {Counter_}];       set domainName $xFormName$domainName;    };    return $domainName; }
+Tcl2 proc Counter_8b7a3665_60ce_4fb5_9e70_88bb5f922b716_createDomain { in_domainName } {    set domainName $in_domainName;    if { {Local} == {Local} }    {       set xFormName [FME_EncodeText {Counter_}];       set domainName $xFormName$domainName;    };    return $domainName; }
 
-FACTORY_DEF * TeeFactory    FACTORY_NAME Counter    INPUT  FEATURE_TYPE AttributeCopier_OUTPUT    OUTPUT FEATURE_TYPE Counter_OUTPUT         "Ident" @Count(fme_encoded,@Tcl2("Counter_a71c1ae8_7940_4ccc_ab9c_85e5efa0f4dc7_createDomain {counter}"), 1)
-
-# -------------------------------------------------------------------------
-
-Tcl2 proc Id_Pere_826f894b_7104_4d1c_be0f_d05851045bd67_doSetAttr {attrText} {    FME_SetAttribute [FME_DecodeText {Id_Pere}] [FME_DecodeText $attrText] }
-FACTORY_DEF * TeeFactory    FACTORY_NAME Id_Pere    INPUT  FEATURE_TYPE Counter_OUTPUT    OUTPUT FEATURE_TYPE Id_Pere_OUTPUT        @Tcl2("Id_Pere_826f894b_7104_4d1c_be0f_d05851045bd67_doSetAttr {@EvaluateExpression(STRING_ENCODED,P<at>Value<openparen>Ident<closeparen>,Id_Pere)} ")
+FACTORY_DEF * TeeFactory    FACTORY_NAME Counter    INPUT  FEATURE_TYPE AttributeCopier_OUTPUT    OUTPUT FEATURE_TYPE Counter_OUTPUT         "Ident" @Count(fme_encoded,@Tcl2("Counter_8b7a3665_60ce_4fb5_9e70_88bb5f922b716_createDomain {counter}"), 1)
 
 # -------------------------------------------------------------------------
 
-FACTORY_DEF * OverlayFactory    FACTORY_NAME Mise_a_plat    INPUT POLYGON FEATURE_TYPE Id_Fils_OUTPUT_1_kY61e3j2n/I=    INPUT POLYGON FEATURE_TYPE Id_Pere_OUTPUT    MODE COMPLETE    OUTPUT POLYGON  FEATURE_TYPE Mise_a_plat_AREA
+Tcl2 proc Id_Pere_4935d0a7_fb7c_44d0_b9e1_bde0a4d9f95b6_doSetAttr {attrText} {    FME_SetAttribute [FME_DecodeText {Id_Pere}] [FME_DecodeText $attrText] }
+FACTORY_DEF * TeeFactory    FACTORY_NAME Id_Pere    INPUT  FEATURE_TYPE Counter_OUTPUT    OUTPUT FEATURE_TYPE Id_Pere_OUTPUT        @Tcl2("Id_Pere_4935d0a7_fb7c_44d0_b9e1_bde0a4d9f95b6_doSetAttr {@EvaluateExpression(STRING_ENCODED,P<at>Value<openparen>Ident<closeparen>,Id_Pere)} ")
+
+# -------------------------------------------------------------------------
+
+FACTORY_DEF * OverlayFactory    FACTORY_NAME Mise_a_plat    INPUT POLYGON FEATURE_TYPE Id_Pere_OUTPUT    INPUT POLYGON FEATURE_TYPE Id_Fils_OUTPUT_1_kY61e3j2n/I=    MODE COMPLETE    OUTPUT POLYGON  FEATURE_TYPE Mise_a_plat_AREA
 
 # -------------------------------------------------------------------------
 
@@ -1734,9 +1755,9 @@ FACTORY_DEF * ReferenceFactory    FACTORY_NAME Jointure_Pere_Fils    INPUT REFER
 
 # -------------------------------------------------------------------------
 
-INCLUDE [    set macroLine "MACRO AttributeKeeper_54d45735_f8c7_4d8a_b8f0_753dd9dcccc37_LIST_EXP ";    foreach attr [split ""] {       set attr [FME_DecodeText $attr];       set attr [regsub "{}$" $attr "{}.*"];       set attr [regsub -all "{}" $attr "{\[0-9\]+}"];       append macroLine ",^$attr$";    };    puts $macroLine; ]
+INCLUDE [    set macroLine "MACRO AttributeKeeper_c9ef44c4_a307_462c_a946_f58f8d7b35376_LIST_EXP ";    foreach attr [split ""] {       set attr [FME_DecodeText $attr];       set attr [regsub "{}$" $attr "{}.*"];       set attr [regsub -all "{}" $attr "{\[0-9\]+}"];       append macroLine ",^$attr$";    };    puts $macroLine; ]
 
-FACTORY_DEF * TeeFactory    FACTORY_NAME AttributeKeeper    INPUT  FEATURE_TYPE Jointure_Pere_Fils_MERGED    OUTPUT FEATURE_TYPE AttributeKeeper_OUTPUT        @KeepAttributes(Id_Fils,resultat,Id_Pere,fme_regexp_match,"^fme_$(AttributeKeeper_54d45735_f8c7_4d8a_b8f0_753dd9dcccc37_LIST_EXP)")
+FACTORY_DEF * TeeFactory    FACTORY_NAME AttributeKeeper    INPUT  FEATURE_TYPE Jointure_Pere_Fils_MERGED    OUTPUT FEATURE_TYPE AttributeKeeper_OUTPUT        @KeepAttributes(Id_Fils,resultatValeur,resultat,Id_Pere,fme_regexp_match,"^fme_$(AttributeKeeper_c9ef44c4_a307_462c_a946_f58f8d7b35376_LIST_EXP)")
 
 # -------------------------------------------------------------------------
 FACTORY_DEF * AttrSetFactory FACTORY_NAME AttributeCreator INPUT  FEATURE_TYPE AttributeKeeper_OUTPUT ATTR Nb_Fils 1    OUTPUT OUTPUT FEATURE_TYPE AttributeCreator_OUTPUT 
@@ -1748,11 +1769,11 @@ FACTORY_DEF * PolygonDissolveFactory    INPUT  FEATURE_TYPE AttributeCreator_OUT
 
 Tcl2 set ListConcatenator__separator [FME_DecodeText {<solidus>}];      set ListConcatenator__bracePos [string first {{}}  {Liste_Fils{}.Id_Fils}]
 Tcl2 proc ListConcatenator__Concatenate {} {    upvar \#0 ListConcatenator__bracePos bracePos              ListConcatenator__separator separator;    set i 0;    set result {};    set nextAttr [string replace {Liste_Fils{}.Id_Fils} $bracePos $bracePos \"\{0\"];    set keepEmptyParts [string equal {No} {No}];    while { [FME_AttributeExists $nextAttr] }    {       set attrValue [FME_GetAttribute $nextAttr];       if { $keepEmptyParts || $attrValue != {} } {          lappend result $attrValue;       };       set nextAttr [string replace {Liste_Fils{}.Id_Fils} $bracePos $bracePos \"\{[incr i]\"];    };    FME_SetAttribute {"Fils"} [join $result $separator]; }
-FACTORY_DEF * TeeFactory    FACTORY_NAME ListConcatenator    INPUT  FEATURE_TYPE Dissolver_AREA    OUTPUT FEATURE_TYPE ListConcatenator_OUTPUT         @Tcl2(ListConcatenator__Concatenate)
+FACTORY_DEF * TeeFactory    FACTORY_NAME ListConcatenator    INPUT  FEATURE_TYPE Dissolver_AREA    OUTPUT FEATURE_TYPE ListConcatenator_OUTPUT         @Tcl2(ListConcatenator__Concatenate)             @EvaluateExpression(ATTR_CREATE_EXPR,ValeurDuPere,<at>Value<openparen>Liste_Fils<opencurly>0<closecurly>.resultatValeur<closeparen>, FEATURE_TYPE)
 
 # -------------------------------------------------------------------------
 
-FACTORY_DEF * TeeFactory    FACTORY_NAME "ListConcatenator_OUTPUT -> OUT Correlator"    INPUT FEATURE_TYPE ListConcatenator_OUTPUT    OUTPUT FEATURE_TYPE __GO_TO_FINAL_OUTPUT_ROUTER__       multi_writer_id 0       @Transform(FME_GENERIC,SHAPE)       @SupplyAttributes(ENCODED,fme_template_feature_type,OUT)       @CopyAttributes(ENCODED,__wb_out_feat_type__,Liste_Fils<opencurly>0<closecurly>.resultat)
+FACTORY_DEF * TeeFactory    FACTORY_NAME "ListConcatenator_OUTPUT -> OUT Correlator"    INPUT FEATURE_TYPE ListConcatenator_OUTPUT    OUTPUT FEATURE_TYPE __GO_TO_FINAL_OUTPUT_ROUTER__       multi_writer_id 0       @Transform(FME_GENERIC,SHAPE)       @CopyAttributes(ENCODED,Valeur,ValeurDuPere)       @SupplyAttributes(ENCODED,fme_template_feature_type,OUT)       @CopyAttributes(ENCODED,__wb_out_feat_type__,Liste_Fils<opencurly>0<closecurly>.resultat)
 # -------------------------------------------------------------------------
 
 FACTORY_DEF * TestFactory   FACTORY_NAME "Final Output Feature Type Router"   INPUT FEATURE_TYPE *   TEST @Value(__wb_out_feat_type__) != ""   OUTPUT PASSED FEATURE_TYPE *     @FeatureType(@Value(__wb_out_feat_type__))   OUTPUT FAILED FEATURE_TYPE __nuke_me__ @Tcl2("FME_StatMessage 818059 [FME_GetAttribute fme_template_feature_type] 818060 818061 fme_warn")
@@ -1761,4 +1782,4 @@ FACTORY_DEF * TestFactory   FACTORY_NAME "Final Output Feature Type Router"   IN
 FACTORY_DEF * TeeFactory   FACTORY_NAME "Final Output Nuker"   INPUT FEATURE_TYPE __nuke_me__
 
 # -------------------------------------------------------------------------
-SHAPE_3_DEF OUT   SHAPE_GEOMETRY               shape_polygon
+SHAPE_3_DEF OUT   SHAPE_GEOMETRY               shape_polygon   Valeur                       number(30,0)
