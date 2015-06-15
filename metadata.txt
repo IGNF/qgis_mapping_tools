@@ -10,7 +10,7 @@
 name=Mapping Tools
 qgisMinimumVersion=2.8
 description=Data acquisition tools from vector segmentation layers
-version=0.2
+version=0.2.1
 author=IGN
 email=carhab@ign.fr
 
@@ -24,7 +24,7 @@ email=carhab@ign.fr
 # Tags are comma separated with spaces allowed
 tags=
 
-homepage=http://gitlab.dockerforge.ign.fr/environnement/qgis_mapping_tools
+homepage=http://carhab-depot.ign.fr/doc_utilisateur_mapping_tools_qgis.pdf
 tracker=http://gitlab.dockerforge.ign.fr/environnement/qgis_mapping_tools/issues
 repository=http://gitlab.dockerforge.ign.fr/environnement/qgis_mapping_tools.git
 category=Plugins
