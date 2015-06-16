@@ -23,7 +23,8 @@ set PY_FILES= ^
 	common.py ^
 	__init__.py ^
 	importFeatureSelector.py ^
-	MappingTools_dialog.py
+	MappingTools_dialog.py ^
+	custom_action.py
 
 set UI_FILES=importFeatureSelector.ui
 

@@ -21,7 +21,6 @@ class ImportFeature(QgsMapTool):
         self.importFeatureSelector = loadUi( os.path.join( self.plugin_dir, "importFeatureSelector.ui" ) )
 
     def activateImportFeature(self):
-        print 'act if'
         for layer in self.iface.mapCanvas().layers():
             if layer == self.iface.mapCanvas().currentLayer():
                 self.destinationLayer = layer
@@ -38,7 +37,6 @@ class ImportFeature(QgsMapTool):
         self.updateSourceLayerSelector()
         
     def deactivateImportFeature(self):
-        print 'deact if'
         QgsMapLayerRegistry.instance().layersRemoved.disconnect(self.updateSourceLayerSelector)
         QgsMapLayerRegistry.instance().legendLayersAdded.disconnect(self.updateSourceLayerSelector)
         self.iface.mapCanvas().currentLayerChanged.disconnect(self.updateSourceLayerSelector)
@@ -70,6 +68,7 @@ class ImportFeature(QgsMapTool):
 
     def getGeomToImportByPoint(self, point):
         sourceLayerName = self.importFeatureSelector.findChildren(QListWidget)[0].currentItem().text()
+        sourceLayer = None
         for lyr in self.iface.mapCanvas().layers():
             if lyr.name()==sourceLayerName:
                 sourceLayer = lyr
@@ -111,7 +110,8 @@ class ImportFeature(QgsMapTool):
         fields = featDest.fields()
         #geomToImport = sceneItem.asGeometry()
         geomToImport = self.getGeomToImportByPoint(QgsGeometry().fromPoint(point))
-        
+        if not geomToImport:
+            return
         featToAdd = QgsFeature(fields)
         featToAdd.setGeometry(geomToImport)
         

@@ -63,6 +63,19 @@ class TestMappingTools(object):
         QgsApplication.processEvents()
         return iface.mapCanvas().layers()[0]
 
+    def findButtonByAction(self, action):
+        '''Find button corresponding to the given action.
+            :param buttonActionName: Text value of the action.
+            :type buttonActionName: QString
+            
+            :returns: Widget if found, None else.
+            :rtype: QWidget or None
+        '''
+        for widget in action.associatedWidgets():
+            if type(widget) == QtGui.QToolButton:
+                return widget
+        return None
+
     def findButtonByActionName(self, buttonActionName):
         '''Find button corresponding to the given action.
             :param buttonActionName: Text value of the action.
@@ -306,7 +319,7 @@ class TestMappingTools(object):
             return
 
         # Quit edit mode
-        self.quitLayerEditMode(layer)
+        self.clickOnWidgetByActionName(iface.actionToggleEditing().text())
 
         # Fusion button must be enabled
         if not self.printTest(False, self.findButtonByActionName('Fusion').isEnabled(), 'Disable fusion button', 'Fusion button status'):
@@ -372,7 +385,7 @@ class TestMappingTools(object):
             return
 
         # Quit edit mode
-        self.quitLayerEditMode(layerDest)
+        self.clickOnWidgetByActionName(iface.actionToggleEditing().text())
 
         # Fusion button must be enabled
         if not self.printTest(False, self.findButtonByActionName('Import Feature').isEnabled(), 'Disable fusion button', 'Fusion button status'):
