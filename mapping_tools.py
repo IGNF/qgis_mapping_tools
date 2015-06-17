@@ -24,7 +24,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from qgis.core import QgsMapLayerRegistry, QgsMapLayer, QgsVectorLayer, QgsApplication
-from qgis.gui import QgisInterface, QgsMapTool
+from qgis.gui import QgisInterface, QgsMapTool, QgsMapToolZoom
 
 # Initialize Qt resources from file resources.py
 import resources_rc
@@ -32,7 +32,7 @@ import resources_rc
 from custom_action import CustomAction
 from import_feature import ImportFeature
 from fusion import Fusion
-#from test_action import TestAction
+from test_action import TestAction
 
 from common import Common
 
@@ -69,7 +69,7 @@ class MappingTools:
             statusTip=None,
             whatsThis=None,
             parent=self.iface.mainWindow(),
-            associatedTool=importFeatureMapTool,
+            mapTool=importFeatureMapTool,
             editModeOnly=True,
             checkable=True
             )
@@ -85,12 +85,12 @@ class MappingTools:
             statusTip=None,
             whatsThis=None,
             parent=self.iface.mainWindow(),
-            associatedTool=fusionMapTool,
+            mapTool=fusionMapTool,
             editModeOnly=True,
             checkable=True
             )
         
-        '''testActionMapTool = TestAction(self.iface.mapCanvas())
+        testActionMapTool = TestAction(self.iface.mapCanvas())
         testActionIconPath = self.resourcesPath + 'fusion_icon.png'
         testActionAction = CustomAction(
             iconPath=testActionIconPath,
@@ -101,15 +101,16 @@ class MappingTools:
             statusTip=None,
             whatsThis=None,
             parent=self.iface.mainWindow(),
-            associatedTool=testActionMapTool,
-            mapTool=False,
+            #mapTool=QgsMapToolZoom(self.iface.mapCanvas(), True),
+            #mapTool=testActionMapTool,
+            callback=TestAction(self.iface.mapCanvas()).testcbk,
             editModeOnly=True,
             checkable=False
-            )'''
+            )
         
         self.addAction(importFeatureAction)
         self.addAction(fusionAction)
-        #self.addAction(testActionAction)
+        self.addAction(testActionAction)
         
 
     def addAction(self, action):
@@ -123,9 +124,12 @@ class MappingTools:
                 self.menu,
                 action)
         #if isinstance(action.getAssociatedTool(), QgsMapTool):
-        if action.isMapTool():
-            action.getAssociatedTool().setAction(action)
+        if action.getMapTool():
+            action.getMapTool().setAction(action)
         return action
+
+    def testcbk(self):
+        print 'cbk ok'
 
     def unload(self):
         '''Removes the plugin menu item and icon from QGIS GUI.'''

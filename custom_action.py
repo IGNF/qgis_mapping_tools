@@ -6,7 +6,6 @@ class CustomAction(QAction):
     def __init__(self,
         iconPath,
         text,
-        associatedTool,
         enabledFlag=True,
         addToMenu=True,
         addToToolbar=True,
@@ -14,7 +13,8 @@ class CustomAction(QAction):
         whatsThis=None,
         parent=None,
         editModeOnly=True,
-        mapTool=True,
+        mapTool=None,
+        callback=None,
         checkable = True):
         '''Add a toolbar icon to the toolbar.
             :param icon_path: Path to the icon for this action. Can be a resource
@@ -56,9 +56,9 @@ class CustomAction(QAction):
         
         self.addToMenu = addToMenu
         self.addToToolbar = addToToolbar
-        self.associatedTool = associatedTool
         self.editModeOnly = editModeOnly
         self.mapTool = mapTool
+        self.callback = callback
         
         self.setEnabled(enabledFlag)
         self.setCheckable(checkable)
@@ -69,6 +69,9 @@ class CustomAction(QAction):
         if whatsThis:
             self.setWhatsThis(whatsThis)
         
+        if self.mapTool and not isinstance(self.mapTool, QgsMapTool):
+            raise ValueError('mapTool must be QgsMapTool instance')
+        
         self.previousActivatedMapTool = None
         
         self.triggered.connect(self.activateAction)
@@ -77,8 +80,11 @@ class CustomAction(QAction):
             iface.actionToggleEditing().triggered.connect(self.enableAction)
             iface.mapCanvas().currentLayerChanged.connect(self.manageEnabledStatusAction)
             
-    def getAssociatedTool(self):
-        return self.associatedTool
+    def getMapTool(self):
+        return self.mapTool
+    
+    def getCallback(self):
+        return self.callback
     
     def isToAddToMenu(self):
         return self.addToMenu
@@ -96,7 +102,7 @@ class CustomAction(QAction):
         if toEnable:
             self.previousActivatedMapTool = canvas.mapTool()
         else:
-            canvas.unsetMapTool(self.getAssociatedTool())
+            canvas.unsetMapTool(self.getMapTool())
             if self.previousActivatedMapTool:
                 canvas.setMapTool(self.previousActivatedMapTool)
         
@@ -105,13 +111,9 @@ class CustomAction(QAction):
             self.enableAction(iface.mapCanvas().currentLayer().isEditable())
     
     def activateAction(self, activated):
-        '''if isinstance(self.getAssociatedTool(), QgsMapTool):
-            iface.mapCanvas().setMapTool(self.getAssociatedTool())
-        else:
-            self.getAssociatedTool()()'''
-        if self.isMapTool():
-            iface.mapCanvas().setMapTool(self.getAssociatedTool())
-        else:
-            self.getAssociatedTool().activate()
+        if self.getMapTool():
+            iface.mapCanvas().setMapTool(self.getMapTool())
+        if self.getCallback():
+            self.getCallback()()
     
             
