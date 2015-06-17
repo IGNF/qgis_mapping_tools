@@ -15,7 +15,7 @@ import MappingTools
 class TestMappingTools(object):
 
     '''Speed of mouse cursor move, 0.01 =< float =< 1 (0.2 for realistic move)'''
-    MOVE_SPEED = 1
+    MOVE_SPEED = 200
     # Do full test or a part only
     TESTS_TO_CHECK = '' 
     ''' available values : 'up_to_fusion',

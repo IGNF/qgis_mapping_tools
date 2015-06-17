@@ -1,5 +1,5 @@
 from qgis.gui import QgsMapTool, QgsMapCanvas, QgsRubberBand
-from qgis.core import QgsMapLayer, QgsMapToPixel, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsPoint, QgsSpatialIndex
+from qgis.core import QgsMapLayer, QgsMapToPixel, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsPoint, QgsSpatialIndex, QgsMapLayerRegistry
 from PyQt4.QtGui import QCursor, QPixmap, QColor, QGraphicsScene
 from PyQt4.QtCore import Qt
 from common import Common
@@ -8,69 +8,117 @@ class Fusion(QgsMapTool):
     def __init__(self, canvas):
         super(QgsMapTool, self).__init__(canvas)
         self.canvas = canvas
-        self.cursor = QCursor(Qt.CrossCursor)
         self.pathPointsList = []
-        self.leftButton = False
+        self.blockAction = False
         self.activated.connect(self.activateFusion)
         self.deactivated.connect(self.deactivateFusion)
+        #self.layerCatalog = {}
 
     def activateFusion(self):
-        self.canvas.setCursor(self.cursor)
+        self.canvas.setCursor(QCursor(Qt.CrossCursor))
         self.canvas.setMouseTracking(False)
-        self.updateSpIdx(self.canvas.currentLayer())
-        self.canvas.currentLayerChanged.connect(self.updateSpIdx)
+        '''self.setSpatialIndex(self.canvas.layers())
+        QgsMapLayerRegistry.instance().layerWillBeRemoved.connect(self.removeSpatialIndex)
+        QgsMapLayerRegistry.instance().layersAdded.connect(self.setSpatialIndex)
+        self.canvas.currentLayerChanged.connect(self.setSpatialIndex)'''
         
     def deactivateFusion(self):
         self.canvas.setMouseTracking(True)
-        try:
-            self.canvas.currentLayerChanged.disconnect(self.updateSpIdx)
+        '''try:
+            self.canvas.currentLayerChanged.disconnect(self.setSpatialIndex)
+            QgsMapLayerRegistry.instance().layerWillBeRemoved.disconnect(self.removeSpatialIndex)
+            QgsMapLayerRegistry.instance().layersAdded.disconnect(self.setSpatialIndex)
         except:
-            pass
+            pass'''
         
-    
-    def updateSpIdx(self, currentLayer):
-        if currentLayer == None:
-            return
-        self.index = QgsSpatialIndex(currentLayer.getFeatures())
+    '''def removeSpatialIndex(self, layerId):
+        print 'de ' +str(len(self.canvas.layers()))
+        layer = self.getLayerById(layerId)
+        if layer:
+            print 'del an idx'
+            del self.layerCatalog[layer]
 
+    
+    def setSpatialIndex(self, layers):
+        for layer in layers:
+            index = QgsSpatialIndex(layer.getFeatures())
+            self.layerCatalog[layer] = index
+
+    def getLayerById(self, layerId):
+        print len(self.canvas.layers())
+        print layerId
+        for layer in self.canvas.layers():
+            print layer.id()
+            if layer.id() == layerId:
+                return layer
+        return None
+
+    def getSpatialIdxFromLayer(self, layer):
+        return self.layerCatalog[layer]
+'''
+    
+    def getMoveTrace(self):
+        for sceneItem in self.canvas.scene().items():
+            if isinstance(sceneItem, QgsRubberBand):
+                return sceneItem
+        return None
+    
+    def createMoveTrace(self, color, width):
+        moveTrace = QgsRubberBand(self.canvas, False)
+        moveTrace.setColor(color)
+        moveTrace.setWidth(width)
+        return moveTrace
+    
+    def updateMoveTrace(self, pointsList):
+        moveTrace = self.getMoveTrace()
+        if moveTrace:
+            moveTrace.setToGeometry(QgsGeometry.fromPolyline(pointsList), None)
+            return moveTrace
+        return None
+    
+    def screenCoordsToMapPoint(self, x, y):
+        point = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
+        mapPoint = QgsPoint(point[0], point[1])
+        return mapPoint
+    
     def canvasPressEvent(self, event):
-        if event.button() == 1:
-            self.canvas.currentLayer().featureAdded.connect( self.featureAddedEvent )
-            self.canvas.currentLayer().featureDeleted.connect( self.featureDeletedEvent )
-            self.leftButton = True 
-            layer = self.canvas.currentLayer()
-            layer.beginEditCommand("Features fusion")
-            self.newFeat = None
-            self.r = QgsRubberBand(self.canvas, False)
-            self.r.setColor(QColor(255, 71, 25))
-            self.r.setWidth(0.2)
-            x = event.pos().x()
-            y = event.pos().y()
-            point = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
-            self.pathPointsList.append(QgsPoint(point[0], point[1]))
-            if not layer or layer.type() != QgsMapLayer.VectorLayer or layer.featureCount() == 0:
-                self.itemsReset()
-                return
+        if event.button() != 1:
+            self.itemsReset()
+            return
+        #print self.layerCatalog
+        #self.canvas.currentLayer().featureAdded.connect(self.addFeatureToSpatialIndex)
+        #self.canvas.currentLayer().featureDeleted.connect(self.deleteFeatureFromSpatialIndex)
+        layer = self.canvas.currentLayer()
+        layer.beginEditCommand("Features fusion")
+        self.createMoveTrace(QColor(255, 71, 25), 0.2)
+        mapPoint = self.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
+        self.pathPointsList.append(mapPoint)
+        if not layer or layer.type() != QgsMapLayer.VectorLayer or layer.featureCount() == 0:
+            self.itemsReset()
+            return
             
     def canvasMoveEvent(self, event):
-        if not self.leftButton:
-            return
         layer = self.canvas.currentLayer()
-        x = event.pos().x()
-        y = event.pos().y()
-        point = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
-        intersectFeatIds = self.index.nearestNeighbor(QgsPoint(point[0], point[1]),0)
+        mapPoint = self.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
+        '''intersectFeatIds = self.getSpatialIdxFromLayer(layer).nearestNeighbor(QgsPoint(point[0], point[1]),0)
+        
         for fId in intersectFeatIds:
             req = QgsFeatureRequest(fId)
-            for f in layer.getFeatures(req):
-                if f.geometry().intersects(QgsGeometry.fromPoint(QgsPoint(point[0], point[1]))):
-                    if self.newFeat == None:
-                        self.newFeat = f
-        self.pathPointsList.append(QgsPoint(point[0], point[1]))
-        self.r.setToGeometry(QgsGeometry.fromPolyline(self.pathPointsList), None)
+            for f in layer.getFeatures(req):'''
+        i = 0
+        for f in layer.getFeatures():
+            if f.geometry().intersects(QgsGeometry.fromPoint(mapPoint)):
+                if i == 0:
+                    self.newFeat = f
+                    i = 1
+        self.pathPointsList.append(mapPoint)
+        
+        self.updateMoveTrace(self.pathPointsList)
 
     def canvasReleaseEvent(self, event):
-        if not self.leftButton:
+        
+        if event.button() != 1:
+            self.itemsReset()
             return
         # create a feature
         try:
@@ -87,15 +135,15 @@ class Fusion(QgsMapTool):
 
                 featuresToFusionList = [self.newFeat.id()]
 
-                selectedFeatureBbox = ft.geometry().boundingBox()
-                intersectFeatIds = self.index.intersects(selectedFeatureBbox)
+                '''selectedFeatureBbox = ft.geometry().boundingBox()
+                intersectFeatIds = self.getSpatialIdxFromLayer(layer).intersects(selectedFeatureBbox)
                 for fId in intersectFeatIds:
-                    req = QgsFeatureRequest(fId)
-                    for f in layer.getFeatures(req):
-                        if f.geometry().intersects(ft.geometry()):
-                            if fId not in featuresToFusionList:
-                                self.newFeat.setGeometry(self.newFeat.geometry().combine(f.geometry()))
-                                featuresToFusionList.append(f.id())
+                    f = self.getCurrentLayerFeatureById(fId)'''
+                for f in layer.getFeatures():
+                    if f.geometry().intersects(ft.geometry()):
+                        if f.id() not in featuresToFusionList:
+                            self.newFeat.setGeometry(self.newFeat.geometry().combine(f.geometry()))
+                            featuresToFusionList.append(f.id())
                                 
                 if len(featuresToFusionList) == 1:
                     self.itemsReset()
@@ -104,8 +152,6 @@ class Fusion(QgsMapTool):
                 layer.addFeature(self.newFeat)
                 # Get newly added feature
                 f = self.newFeat
-                fid = f.id()
-                self.index.insertFeature({fid: f}.values()[0])
                 for fId in featuresToFusionList:
                     layer.deleteFeature(fId)
     
@@ -122,24 +168,25 @@ class Fusion(QgsMapTool):
             layer.destroyEditCommand()
             raise 
 
-    def featureAddedEvent(self, feature):
-        
-        if self.canvas.currentLayer():
-            req = QgsFeatureRequest(feature)
-            for f in self.canvas.currentLayer().getFeatures(req):
-                self.index.insertFeature({feature: f}.values()[0])
+    '''def addFeatureToSpatialIndex(self, featureId):
+        featureToAdd = self.getCurrentLayerFeatureById(featureId)
+        if featureToAdd:
+            self.getSpatialIdxFromLayer(self.canvas.currentLayer()).insertFeature({featureId: featureToAdd}.values()[0])
 
-    def featureDeletedEvent(self, feature):
+    def deleteFeatureFromSpatialIndex(self, featureId):
+        featureToDelete = self.getCurrentLayerFeatureById(featureId)
+        if featureToDelete:
+            self.getSpatialIdxFromLayer(self.canvas.currentLayer()).deleteFeature(featureToDelete)
+                
+    def getCurrentLayerFeatureById(self, featureId):
         if self.canvas.currentLayer():
-            req = QgsFeatureRequest(feature)
-            for f in self.canvas.currentLayer().getFeatures(req):
-                self.index.deleteFeature(f)
-
+            req = QgsFeatureRequest(featureId)
+            for feature in self.canvas.currentLayer().getFeatures(req):
+                return feature
+        return None
+'''
     def itemsReset(self):
-        try:
-            self.canvas.currentLayer().featureAdded.disconnect( self.featureAddedEvent )
-            self.canvas.currentLayer().featureDeleted.disconnect( self.featureDeletedEvent )
-        except:
-            pass
+        '''self.canvas.currentLayer().featureAdded.disconnect( self.addFeatureToSpatialIndex )
+        self.canvas.currentLayer().featureDeleted.disconnect( self.deleteFeatureFromSpatialIndex )'''
         self.pathPointsList = []
-        self.canvas.scene().removeItem(self.r)
+        self.canvas.scene().removeItem(self.getMoveTrace())

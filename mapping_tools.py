@@ -102,7 +102,7 @@ class MappingTools:
             whatsThis=None,
             parent=self.iface.mainWindow(),
             #mapTool=QgsMapToolZoom(self.iface.mapCanvas(), True),
-            #mapTool=testActionMapTool,
+            #mapTool=t,
             callback=TestAction(self.iface.mapCanvas()).testcbk,
             editModeOnly=True,
             checkable=False
@@ -127,9 +127,6 @@ class MappingTools:
         if action.getMapTool():
             action.getMapTool().setAction(action)
         return action
-
-    def testcbk(self):
-        print 'cbk ok'
 
     def unload(self):
         '''Removes the plugin menu item and icon from QGIS GUI.'''
