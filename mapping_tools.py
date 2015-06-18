@@ -39,6 +39,7 @@ from common import Common
 class MappingTools:
 
     def __init__(self, iface):
+        
         '''Constructor.
             :param iface: An interface instance that will be passed to this class
             which provides the hook by which you can manipulate the QGIS
@@ -47,7 +48,6 @@ class MappingTools:
         '''
         # Save reference to the QGIS interface
         self.iface = iface
-        
         # Declare instance attributes
         self.actions = []
         self.menu = 'Mapping Tools'
@@ -101,8 +101,8 @@ class MappingTools:
             statusTip=None,
             whatsThis=None,
             parent=self.iface.mainWindow(),
-            #mapTool=QgsMapToolZoom(self.iface.mapCanvas(), True),
-            #mapTool=t,
+            mapTool=QgsMapToolZoom(self.iface.mapCanvas(), True),
+            #mapTool=testActionMapTool,
             callback=TestAction(self.iface.mapCanvas()).testcbk,
             editModeOnly=True,
             checkable=False
@@ -112,7 +112,6 @@ class MappingTools:
         self.addAction(fusionAction)
         self.addAction(testActionAction)
         
-
     def addAction(self, action):
         self.actions.append(action)
 
