@@ -54,11 +54,11 @@ class MappingTools:
         self.toolbar = self.iface.addToolBar(u'MappingTools')
         self.toolbar.setObjectName(u'MappingTools')
         self.resourcesPath = ':/plugins/MappingTools/resources/img/'
-        
+
     def initGui(self):
         '''Create the menu entries and toolbar icons inside the QGIS GUI.'''
 
-        importFeatureMapTool = ImportFeature(self.iface)
+        importFeatureMapTool = ImportFeature(self.iface.mapCanvas())
         importFeatureIconPath = self.resourcesPath + 'import_feature_icon.png'
         importFeatureAction = CustomAction(
             iconPath=importFeatureIconPath,
