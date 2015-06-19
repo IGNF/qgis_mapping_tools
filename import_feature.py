@@ -11,6 +11,8 @@ import os.path
 class ImportFeature(QgsMapTool):
     def __init__(self, canvas):
         super(QgsMapTool, self).__init__(canvas)
+        self.common = Common()
+        
         self.canvas = canvas
         self.moveLocked=False
         self.plugin_dir = os.path.dirname(__file__)
@@ -64,8 +66,8 @@ class ImportFeature(QgsMapTool):
     def getGeomToImportByPoint(self, point):
         if point:
             sourceLayer = self.getSourceLayer()
-            sourceFeature = Common().getFirstIntersectedGeom(point, sourceLayer)
-            destFeature =  Common().getFirstIntersectedGeom(point, self.canvas.currentLayer())
+            sourceFeature = self.common.getFirstIntersectedGeom(point, sourceLayer)
+            destFeature =  self.common.getFirstIntersectedGeom(point, self.canvas.currentLayer())
             
             if sourceLayer and sourceFeature and destFeature:
                 sourceGeom = sourceFeature.geometry()
@@ -79,9 +81,9 @@ class ImportFeature(QgsMapTool):
         
         destinationLayer.beginEditCommand("Import feature")
         
-        mapPoint = Common().screenCoordsToMapPoint(event.pos().x(), event.pos().y())
+        mapPoint = self.common.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
         
-        featureToPierce = Common().getFirstIntersectedGeom(QgsGeometry().fromPoint(mapPoint), destinationLayer)
+        featureToPierce = self.common.getFirstIntersectedGeom(QgsGeometry().fromPoint(mapPoint), destinationLayer)
         geomToImport = self.getGeomToImportByPoint(QgsGeometry().fromPoint(mapPoint))
         
         if geomToImport and featureToPierce:

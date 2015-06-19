@@ -7,6 +7,8 @@ from common import Common
 class Fusion(QgsMapTool):
     def __init__(self, canvas):
         super(QgsMapTool, self).__init__(canvas)
+        self.common = Common()
+        
         self.canvas = canvas
         self.mergedFeature = None
         self.trackPoints = []
@@ -73,15 +75,15 @@ class Fusion(QgsMapTool):
             return
         
         self.createMoveTrack(QColor(255, 71, 25), 0.2)
-        mapPoint = Common().screenCoordsToMapPoint(event.pos().x(), event.pos().y())
-        self.mergedFeature = Common().getFirstIntersectedGeom(QgsGeometry.fromPoint(mapPoint), layer)
+        mapPoint = self.common.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
+        self.mergedFeature = self.common.getFirstIntersectedGeom(QgsGeometry.fromPoint(mapPoint), layer)
         self.updateMoveTrack(mapPoint)
             
     def canvasMoveEvent(self, event):
         layer = self.canvas.currentLayer()
-        mapPoint = Common().screenCoordsToMapPoint(event.pos().x(), event.pos().y())
+        mapPoint = self.common.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
         if not self.mergedFeature:
-            self.mergedFeature = Common().getFirstIntersectedGeom(QgsGeometry.fromPoint(mapPoint), layer)
+            self.mergedFeature = self.common.getFirstIntersectedGeom(QgsGeometry.fromPoint(mapPoint), layer)
         self.updateMoveTrack(mapPoint)
 
     def canvasReleaseEvent(self, event):
@@ -95,7 +97,7 @@ class Fusion(QgsMapTool):
             return
 
         featuresToMerge = [self.mergedFeature.id()]
-        for feature in Common().getIntersectedGeom(self.getMoveTrack().asGeometry(), layer):
+        for feature in self.common.getIntersectedGeom(self.getMoveTrack().asGeometry(), layer):
             if feature.id() not in featuresToMerge:
                 self.mergedFeature.setGeometry(self.mergedFeature.geometry().combine(feature.geometry()))
                 featuresToMerge.append(feature.id())
