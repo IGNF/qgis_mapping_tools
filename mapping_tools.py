@@ -34,6 +34,7 @@ from import_feature import ImportFeature
 from fusion import Fusion
 from test_action import TestAction
 
+
 from common import Common
 
 class MappingTools:
@@ -54,11 +55,13 @@ class MappingTools:
         self.toolbar = self.iface.addToolBar(u'MappingTools')
         self.toolbar.setObjectName(u'MappingTools')
         self.resourcesPath = ':/plugins/MappingTools/resources/img/'
+        
+        self.common = Common(iface)
 
     def initGui(self):
         '''Create the menu entries and toolbar icons inside the QGIS GUI.'''
 
-        importFeatureMapTool = ImportFeature(self.iface.mapCanvas())
+        importFeatureMapTool = ImportFeature(self.iface)
         importFeatureIconPath = self.resourcesPath + 'import_feature_icon.png'
         importFeatureAction = CustomAction(
             iconPath=importFeatureIconPath,
@@ -74,7 +77,7 @@ class MappingTools:
             checkable=True
             )
         
-        fusionMapTool = Fusion(self.iface.mapCanvas())
+        fusionMapTool = Fusion(self.iface)
         fusionIconPath = self.resourcesPath + 'fusion_icon.png'
         fusionAction = CustomAction(
             iconPath=fusionIconPath,
@@ -89,7 +92,7 @@ class MappingTools:
             editModeOnly=True,
             checkable=True
             )
-        
+
         testActionMapTool = TestAction(self.iface.mapCanvas())
         testActionIconPath = self.resourcesPath + 'fusion_icon.png'
         testActionAction = CustomAction(
@@ -105,7 +108,7 @@ class MappingTools:
             #mapTool=testActionMapTool,
             callback=TestAction(self.iface.mapCanvas()).testcbk,
             editModeOnly=True,
-            checkable=False
+            checkable=True
             )
         
         self.addAction(importFeatureAction)

@@ -9,11 +9,11 @@ import os.path
 
 
 class ImportFeature(QgsMapTool):
-    def __init__(self, canvas):
-        super(QgsMapTool, self).__init__(canvas)
-        self.common = Common()
+    def __init__(self, iface):
+        super(QgsMapTool, self).__init__(iface.mapCanvas())
+        self.common = Common(iface)
         
-        self.canvas = canvas
+        self.canvas = iface.mapCanvas()
         self.moveLocked=False
         self.plugin_dir = os.path.dirname(__file__)
         self.importFeatureSelector = loadUi( os.path.join( self.plugin_dir, "importFeatureSelector.ui" ) )
@@ -27,6 +27,9 @@ class ImportFeature(QgsMapTool):
         
         self.importFeatureSelector.show()
         self.updateSourceLayerSelector()
+        if self.canvas.currentLayer().type() == QgsMapLayer.VectorLayer:
+            self.common.setSpatialIndexToLayer(self.canvas.currentLayer())
+        self.canvas.currentLayerChanged.connect(self.common.setSpatialIndexToLayer)
         QgsMapLayerRegistry.instance().layersRemoved.connect(self.updateSourceLayerSelector)
         QgsMapLayerRegistry.instance().legendLayersAdded.connect(self.updateSourceLayerSelector)
         self.canvas.currentLayerChanged.connect(self.updateSourceLayerSelector)
@@ -37,15 +40,17 @@ class ImportFeature(QgsMapTool):
             QgsMapLayerRegistry.instance().layersRemoved.connect(self.updateSourceLayerSelector)
             QgsMapLayerRegistry.instance().legendLayersAdded.connect(self.updateSourceLayerSelector)
             self.canvas.currentLayerChanged.connect(self.updateSourceLayerSelector)
+            self.canvas.currentLayerChanged.connect(self.common.setSpatialIndexToLayer)
         except:
             pass
 
     def updateSourceLayerSelector(self):
-        self.importFeatureSelector.findChildren(QListWidget)[0].clear()
-        layers = self.canvas.layers()
-
-        layerAdded = False
         sourceLayerList = self.importFeatureSelector.findChildren(QListWidget)[0]
+        sourceLayerList.clear()
+        # replace canvas by iface.legendInterface if we want add all vector layers including non visible ones
+        layers = self.canvas.layers()
+        
+        layerAdded = False
         for layer in layers:
             if layer.type() == QgsMapLayer.VectorLayer and layer != self.canvas.currentLayer():
                 sourceLayerList.addItem(layer.name())
@@ -62,12 +67,12 @@ class ImportFeature(QgsMapTool):
                 if layer.name() == sourceLayerName:
                     return layer
         return None
-            
+
     def getGeomToImportByPoint(self, point):
         if point:
             sourceLayer = self.getSourceLayer()
-            sourceFeature = self.common.getFirstIntersectedGeom(point, sourceLayer)
-            destFeature =  self.common.getFirstIntersectedGeom(point, self.canvas.currentLayer())
+            sourceFeature = self.common.getFirstIntersectedFeature(point, sourceLayer)
+            destFeature =  self.common.getFirstIntersectedFeature(point, self.canvas.currentLayer())
             
             if sourceLayer and sourceFeature and destFeature:
                 sourceGeom = sourceFeature.geometry()
@@ -83,18 +88,18 @@ class ImportFeature(QgsMapTool):
         
         mapPoint = self.common.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
         
-        featureToPierce = self.common.getFirstIntersectedGeom(QgsGeometry().fromPoint(mapPoint), destinationLayer)
-        geomToImport = self.getGeomToImportByPoint(QgsGeometry().fromPoint(mapPoint))
+        featureToPierce = self.common.getFirstIntersectedFeature(QgsGeometry().fromPoint(mapPoint), destinationLayer)
+        ringToImport = self.getGeomToImportByPoint(QgsGeometry().fromPoint(mapPoint))
         
-        if geomToImport and featureToPierce:
+        if ringToImport and featureToPierce:
             fields = featureToPierce.fields()
             ringFeature = QgsFeature(fields)
-            ringFeature.setGeometry(geomToImport)
+            ringFeature.setGeometry(ringToImport)
             if not destinationLayer.addFeature(ringFeature):
                 destinationLayer.destroyEditCommand()
     
             differenceFeature = QgsFeature(featureToPierce)
-            difference = featureToPierce.geometry().difference(geomToImport)
+            difference = featureToPierce.geometry().difference(ringToImport)
             if difference.isMultipart():
                 for part in difference.asGeometryCollection():
                     differenceFeature.setGeometry(part)

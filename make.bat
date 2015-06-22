@@ -95,6 +95,7 @@ if "%1" == "test" (
 	echo.-----------------------------------
 	echo.Launching tests.
 	echo.-----------------------------------
+	rem python test\src\UnitTestsMappingTools.py
 	call qgis --defaultui --code test\src\testMappingTools.py
 	goto end
 )
