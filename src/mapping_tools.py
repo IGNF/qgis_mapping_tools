@@ -38,7 +38,6 @@ from custom_maptool import CustomMapTool
 class MappingTools:
 
     def __init__(self, iface):
-        
         '''Constructor.
             :param iface: An interface instance that will be passed to this class
             which provides the hook by which you can manipulate the QGIS
@@ -55,8 +54,9 @@ class MappingTools:
         self.resourcesPath = ':/plugins/MappingTools/resources/img/'
 
     def initGui(self):
-        '''Create the menu entries and toolbar icons inside the QGIS GUI.'''
-
+        '''Instanciate CustomActions to add to plugin toolbar.'''
+        
+        # Import feature action instance.
         importFeatureMapTool = ImportFeature(self.iface)
         importFeatureIconPath = self.resourcesPath + 'import_feature_icon.png'
         importFeatureAction = CustomAction(
@@ -73,6 +73,7 @@ class MappingTools:
             checkable=True
             )
         
+        # Fusion action instance.
         fusionMapTool = Fusion(self.iface)
         fusionIconPath = self.resourcesPath + 'fusion_icon.png'
         fusionAction = CustomAction(
@@ -88,10 +89,17 @@ class MappingTools:
             editModeOnly=True,
             checkable=True
             )
+        
+        # Add created actions to plugin.
         self.addAction(importFeatureAction)
         self.addAction(fusionAction)
         
     def addAction(self, action):
+        '''Add custom actions to toolbar, menu and bind its to map tool if defined.
+            :param action: A custom action instance.
+            :type action: CustomAction
+        '''
+        
         self.actions.append(action)
 
         if action.isToAddToToolbar():
@@ -101,13 +109,13 @@ class MappingTools:
             self.iface.addPluginToMenu(
                 self.menu,
                 action)
-        #if isinstance(action.getAssociatedTool(), QgsMapTool):
+
         if action.getMapTool():
             action.getMapTool().setAction(action)
-        return action
 
     def unload(self):
         '''Removes the plugin menu item and icon from QGIS GUI.'''
+        
         for action in self.iface.mainWindow().findChild(QToolBar, 'MappingTools').actions():
             self.iface.removePluginMenu(
                 'Mapping Tools',
