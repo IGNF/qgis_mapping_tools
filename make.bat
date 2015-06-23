@@ -17,21 +17,18 @@ set QGISDIR=%UserProfile%\.qgis2\python\plugins
 set PLUGINNAME=MappingTools
 
 set PY_FILES= ^
-	mapping_tools.py ^
-	import_feature.py ^
-	fusion.py ^
-	common.py ^
+	src\mapping_tools.py ^
+	src\import_feature.py ^
+	src\fusion.py ^
+	src\custom_maptool.py ^
 	__init__.py ^
-	importFeatureSelector.py ^
-	MappingTools_dialog.py ^
-	custom_action.py ^
-	test_action.py
+	src\custom_action.py
 
-set UI_FILES=importFeatureSelector.ui
+set UI_FILES=ui\importFeatureSelector.ui
 
 set EXTRAS=metadata.txt
 
-set COMPILED_RESOURCE_FILES=resources_rc.py
+set COMPILED_RESOURCE_FILES=resources\resources_rc.py
 
 set PLUGIN_UPLOAD=%cd%/plugin_upload.py
 
@@ -62,7 +59,7 @@ if "%1" == "compile" (
 	rem for %%i in (%UI_FILES%) DO (
 	rem 	pyuic4 -o %%i.py %%i.ui
 	rem )
-	pyrcc4 -o resources_rc.py resources.qrc
+	pyrcc4 -o resources\resources_rc.py resources\resources.qrc
 	goto end
 )
 
