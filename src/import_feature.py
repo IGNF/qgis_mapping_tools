@@ -41,7 +41,7 @@ class ImportFeature(CustomMapTool):
         self.canvas.currentLayerChanged.connect(self.updateSourceLayerSelector)
         
     def deactivateMapTool(self):
-        '''Override CustomMapTool method to add specific stuff at tool activating.'''
+        '''Override CustomMapTool method to add specific stuff at tool deactivating.'''
         
         # Declare override.
         super(ImportFeature, self).deactivateMapTool()
