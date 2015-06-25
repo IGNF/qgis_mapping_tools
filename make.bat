@@ -21,7 +21,7 @@ set PY_FILES= ^
 	src\import_feature.py ^
 	src\fusion.py ^
 	src\custom_maptool.py ^
-	__init__.py ^
+	src\__init__.py ^
 	src\custom_action.py
 
 set UI_FILES=ui\importFeatureSelector.ui
@@ -47,6 +47,7 @@ if "%1" == "help" (
 	echo.  clean         to remove rcc generated file.
 	echo.  zip           to create plugin zip bundle.
 	echo.  upload        to upload plugin to Plugin repo ^(TODO !!!^).
+	echo.  doc           to auto-generate html doc with sphinx.
 	echo.
 )
 
@@ -157,6 +158,18 @@ if "%1" == "upload" (
 	echo.Uploading plugin to Plugin repo.
 	echo.--------------------------------
 	%PLUGIN_UPLOAD% %PLUGINNAME%.zip
+	goto end
+)
+
+if "%1" == "doc" (
+	:doc
+	echo.
+	echo.--------------------------------
+	echo.Auto-generating html doc.
+	echo.--------------------------------
+	cd help
+	call make html 
+	cd ..
 	goto end
 )
 

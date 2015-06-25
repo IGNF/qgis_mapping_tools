@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/MappingTools/resources" >
+    <qresource prefix="/plugins/MappingTools/../resources" >
         <file>img/import_feature_icon.png</file>
         <file>img/fusion_icon.png</file>
     </qresource>

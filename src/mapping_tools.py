@@ -1,25 +1,19 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- MappingTools
-                                 A QGIS plugin
- Data acquisition tools from vector segmentation layers
-                              -------------------
-        begin                : 2015-05-05
-        git sha              : $Format:%H$
-        copyright            : (C) 2015 by IGN
-        email                : carhab@ign.fr
- ***************************************************************************/
+ MappingTools Class
+        
+        A QGIS plugin Data acquisition tools from vector segmentation layers
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
+        begin : 2015-05-05
+        
+        author : IGN
+        
+        contact : carhab@ign.fr
  ***************************************************************************/
+ 
 """
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -27,7 +21,7 @@ from qgis.core import QgsMapLayerRegistry, QgsMapLayer, QgsVectorLayer, QgsAppli
 from qgis.gui import QgisInterface, QgsMapTool, QgsMapToolZoom
 
 # Initialize Qt resources from file resources.py
-import resources_rc
+from resources import resources_rc
 
 from custom_action import CustomAction
 from import_feature import ImportFeature
@@ -38,11 +32,13 @@ from custom_maptool import CustomMapTool
 class MappingTools:
 
     def __init__(self, iface):
-        '''Constructor.
-            :param iface: An interface instance that will be passed to this class
-            which provides the hook by which you can manipulate the QGIS
-            application at run time.
-            :type iface: QgsInterface
+        '''
+        Constructor.
+        
+        :param iface: An interface instance that will be passed to this class
+        which provides the hook by which you can manipulate the QGIS
+        application at run time.
+        :type iface: QgsInterface
         '''
         # Save reference to the QGIS interface
         self.iface = iface
@@ -95,9 +91,11 @@ class MappingTools:
         self.addAction(fusionAction)
         
     def addAction(self, action):
-        '''Add custom actions to toolbar, menu and bind its to map tool if defined.
-            :param action: A custom action instance.
-            :type action: CustomAction
+        '''
+        Add custom actions to toolbar, menu and bind its to map tool if defined.
+        
+        :param action: A custom action instance.
+        :type action: CustomAction
         '''
         
         self.actions.append(action)
@@ -121,3 +119,4 @@ class MappingTools:
                 'Mapping Tools',
                 action)
             self.iface.removeToolBarIcon(action)
+

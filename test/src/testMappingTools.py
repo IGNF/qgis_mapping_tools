@@ -28,6 +28,7 @@ class TestMappingTools(object):
     
     def __init__(self):
         '''Constructor.
+        
             :param iface: An interface instance that will be passed to this class
             which provides the hook by which you can manipulate the QGIS
             application at run time.
@@ -38,6 +39,7 @@ class TestMappingTools(object):
 
     def screenShot(self, imgName = 'debugScreenshot'):
         '''Shoot screen.
+        
             :param imgName: Text value of the action to click on.
             :type imgName: QString
             :default imgName: 'debugScreenshot.png'
@@ -47,11 +49,12 @@ class TestMappingTools(object):
     
     def addTestVectorLayer(self, path='test/data/segment.shp'):
         '''Add a vector layer to the map.
+        
             :param path: Shapefile name to add.
             :type path: QString
             :default path: 'test/data/segement.shp'
             
-            :returns: Vector layer which has been added to map canvas
+            :return: Vector layer which has been added to map canvas
             :rtype: QgsVectorLayer
         '''
 
@@ -65,10 +68,11 @@ class TestMappingTools(object):
 
     def findButtonByAction(self, action):
         '''Find button corresponding to the given action.
+        
             :param buttonActionName: Text value of the action.
             :type buttonActionName: QString
             
-            :returns: Widget if found, None else.
+            :return: Widget if found, None else.
             :rtype: QWidget or None
         '''
         for widget in action.associatedWidgets():
@@ -78,10 +82,11 @@ class TestMappingTools(object):
 
     def findButtonByActionName(self, buttonActionName):
         '''Find button corresponding to the given action.
+        
             :param buttonActionName: Text value of the action.
             :type buttonActionName: QString
             
-            :returns: Widget if found, None else.
+            :return: Widget if found, None else.
             :rtype: QWidget or None
         '''
         for tbar in iface.mainWindow().findChildren(QtGui.QToolBar):
@@ -94,10 +99,11 @@ class TestMappingTools(object):
 
     def mapToScreenPoint(self, mapCoordPoint):
         '''Convert point on the map canvas from map to screen coordinates.
+        
             :param mapCoordPoint: Point in map coordinates.
             :type mapCoordPoint: QgsPoint
             
-            :returns: Point in screen coordinates
+            :return: Point in screen coordinates
             :rtype: QPoint
         '''
         # Get point in px into map canvas referential
@@ -115,6 +121,7 @@ class TestMappingTools(object):
 
     def moveTo(self, dest, rate=MOVE_SPEED):
         '''Move smoothly mouse cursor to a destination point.
+        
             :param dest: Mouse cursor destination point.
             :type dest: QPoint
 
@@ -140,6 +147,7 @@ class TestMappingTools(object):
 
     def clickOnMapPoint(self, point):
         '''Click on the map at the given point (map coordinates).
+        
             :param point: Widget to click on.
             :type point: QgsPoint
         '''
@@ -154,6 +162,7 @@ class TestMappingTools(object):
         
     def clickOnWidget(self, widget):
         '''Click on the given widget.
+        
             :param widget: Widget to click on.
             :type widget: QWidget
         '''
@@ -170,6 +179,7 @@ class TestMappingTools(object):
         
     def clickOnWidgetByActionName(self, actionName):
         '''Click on action by its text value.
+        
             :param actionName: Text value of the action to click on.
             :type actionName: QString
         '''
@@ -179,6 +189,7 @@ class TestMappingTools(object):
 
     def dragAndDropScreen(self, source, dest):
         '''Press mouse at source point, move to destination point and release.
+        
             :param source: Drag start position.
             :type source: QPoint
             
@@ -200,6 +211,7 @@ class TestMappingTools(object):
 
     def dragAndDropMap(self, source, dest):
         '''DragAndDropScreen in map coordinates.
+        
             :param source: Drag start position.
             :type source: QPoint in map coordinates
             
@@ -224,6 +236,7 @@ class TestMappingTools(object):
     
     def quitLayerEditMode(self, layer):
         '''Rollback changes on the layer and quit edit mode.
+        
             :param layer: Layer in edit mode.
             :type layer: QVectorLayer
         '''
@@ -236,10 +249,11 @@ class TestMappingTools(object):
     
     def featuresCount(self, layer):
         '''Count the features of a vector layer.
+        
             :param layer: Vector layer.
             :type layer: QgsVectorLayer
             
-            :returns: Layer features count.
+            :return: Layer features count.
             :rtype: int
         '''
 
@@ -250,6 +264,7 @@ class TestMappingTools(object):
     
     def printTest(self, expected, result, testName, valueToTestName):
         '''Print test result.
+        
             :param expected: expected value to test.
             :type expected: unknown
 			
@@ -262,7 +277,7 @@ class TestMappingTools(object):
 			:param valueToTestName: Tested variable name (printed if test fails).
             :type valueToTestName: QString
             
-            :returns: True if test pass, False else.
+            :return: True if test pass, False else.
             :rtype: Bool
         '''
 

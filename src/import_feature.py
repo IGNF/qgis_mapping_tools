@@ -3,17 +3,23 @@ from qgis.gui import *
 from PyQt4.uic import *
 from PyQt4.QtGui import QCursor, QPixmap, QColor, QGraphicsScene, QListWidget
 from PyQt4.QtCore import Qt
-import processing
 from custom_maptool import CustomMapTool
 import os.path
 
-
 class ImportFeature(CustomMapTool):
+    """
+    /***************************************************************************
+     ImportFeature Class
+            
+            Do the stuff importing a feature from a vector layer to another.
+     ***************************************************************************/
+        Constructor :
+    
+        :param iface : Interface of QGIS.
+        :type iface : QgisInterface
+    """
     def __init__(self, iface):
-        '''Constructor.
-            :param iface : Interface of QGIS.
-            :type iface : QgisInterface
-        '''
+        '''Constructor.'''
         
         # Declare inheritance to CustomMapTool class
         CustomMapTool.__init__(self, iface.mapCanvas())
@@ -75,7 +81,8 @@ class ImportFeature(CustomMapTool):
 
     def getSourceLayer(self):
         '''Get layer containing features to import from selected row into layers list widget.
-            :returns: Vector layer or None if not found.
+        
+            :return: Vector layer or None if not found.
             :rtype: QgsVectorLayer or None
         '''
         
@@ -89,10 +96,11 @@ class ImportFeature(CustomMapTool):
 
     def getGeomToImportByPoint(self, point):
         '''Get intersection between features of destination layer and source layer under a point.
+        
             :param: Geometry containing point.
             :type: QgsGeometry
             
-            :returns: Intersection or None if not found.
+            :return: Intersection or None if not found.
             :rtype: QgsGeometry or None
         '''
         

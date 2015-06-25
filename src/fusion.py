@@ -1,15 +1,23 @@
+
 from qgis.gui import QgsMapTool, QgsMapCanvas, QgsRubberBand
 from qgis.core import QgsMapLayer, QgsMapToPixel, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsPoint, QgsSpatialIndex, QgsMapLayerRegistry
 from PyQt4.QtGui import QCursor, QPixmap, QColor, QGraphicsScene
 from PyQt4.QtCore import Qt
 from custom_maptool import CustomMapTool
-
 class Fusion(CustomMapTool):
+    """
+    /***************************************************************************
+     Fusion Class
+            
+            Do the stuff merging features.
+     ***************************************************************************/
+        Constructor :
+    
+        :param iface : Interface of QGIS.
+        :type iface : QgisInterface
+    """
     def __init__(self, iface):
-        '''Constructor.
-            :param iface : Interface of QGIS.
-            :type iface : QgisInterface
-        '''
+        '''Constructor.'''
         
         # Declare inheritance to CustomMapTool
         CustomMapTool.__init__(self, iface.mapCanvas())
@@ -37,13 +45,14 @@ class Fusion(CustomMapTool):
     
     def createMoveTrack(self, color, width):
         '''Create move track.
+        
             :param color : Color of line.
             :type color : QColor
             
             :param width : Width of line.
             :type width : int
             
-            :returns: Created rubber band. 
+            :return: Created rubber band. 
             :rtype: QgsRubberBand
         '''
         
@@ -53,8 +62,9 @@ class Fusion(CustomMapTool):
         return moveTrack
     
     def getMoveTrack(self):
-        '''Find and returns move track.
-            :returns: Rubber band. 
+        '''Find and return move track.
+        
+            :return: Rubber band. 
             :rtype: QgsRubberBand
         '''
         
@@ -65,10 +75,11 @@ class Fusion(CustomMapTool):
     
     def updateMoveTrack(self, point):
         '''Update drawn move track.
+        
             :param point : New point hovered by mouse cursor.
             :type point : QgsPoint
             
-            :returns: Updated rubber band. 
+            :return: Updated rubber band. 
             :rtype: QgsRubberBand
         '''
         
@@ -81,10 +92,11 @@ class Fusion(CustomMapTool):
 
     def isLayerValid(self, layer):
         '''Check if layer is not None, of vector type and not empty.
+        
             :param layer : Layer to check.
             :type layer : QgsMapLayer
             
-            :returns: True if valid. 
+            :return: True if valid. 
             :rtype: bool
         '''
         
@@ -95,7 +107,7 @@ class Fusion(CustomMapTool):
     def isMoveTrackValid(self):
         '''Check if move track is not None and not empty.
             
-            :returns: True if valid. 
+            :return: True if valid. 
             :rtype: bool
         '''
         
@@ -197,3 +209,4 @@ class Fusion(CustomMapTool):
                 return
         
         self.terminateAction()
+

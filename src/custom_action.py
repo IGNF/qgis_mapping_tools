@@ -3,20 +3,15 @@ from qgis.utils import iface
 from qgis.gui import QgsMapTool
 
 class CustomAction(QAction):
-    def __init__(self,
-        iconPath,
-        text,
-        enabledFlag=True,
-        addToMenu=True,
-        addToToolbar=True,
-        statusTip=None,
-        whatsThis=None,
-        parent=None,
-        editModeOnly=True,
-        mapTool=None,
-        callback=None,
-        checkable=True):
-        '''Constructor.
+    """
+    /***************************************************************************
+     CustomAction Class
+            
+            Class that inherits from QAction and contains common stuff to
+            button actions developed for the plugin.
+     ***************************************************************************/
+            Constructor :
+            
             :param iconPath: Path to the icon for this action. Can be a resource
                 path (e.g. ':/plugins/foo/bar.png') or a normal file system path.
             :type icon_path: str
@@ -61,7 +56,20 @@ class CustomAction(QAction):
             :param checkable: Flag indicating whether the action should be checkable.
                 Defaults to True
             :type checkable: bool
-        '''
+    """
+    def __init__(self,
+        iconPath,
+        text,
+        enabledFlag=True,
+        addToMenu=True,
+        addToToolbar=True,
+        statusTip=None,
+        whatsThis=None,
+        parent=None,
+        editModeOnly=True,
+        mapTool=None,
+        callback=None,
+        checkable=True):
         # Declare inheritance to QAction class.
         super(QAction, self).__init__(QIcon(iconPath), text, parent)
         
@@ -113,6 +121,7 @@ class CustomAction(QAction):
 
     def enableAction(self, toEnable):
         '''Enable/disable action.
+        
             :param toEnable: True / False to enable / disable the action.
             :type toEnable: bool
         
@@ -134,6 +143,7 @@ class CustomAction(QAction):
         '''
         
         if iface.mapCanvas().currentLayer():
+            print 'is editable : '+str(iface.mapCanvas().currentLayer().isEditable())
             self.enableAction(iface.mapCanvas().currentLayer().isEditable())
         else:
             self.enableAction(False)

@@ -1,13 +1,22 @@
+
 from PyQt4.QtGui import QMessageBox
 from qgis.gui import QgsMapCanvas, QgsMapTool
 from qgis.core import QgsGeometry, QgsPoint, QgsSpatialIndex, QgsFeatureRequest, QgsMapLayer, QgsMapLayerRegistry
 
 class CustomMapTool(QgsMapTool):
+    """
+    /***************************************************************************
+     CustomMapTool Class
+            
+            Class that inherits from QgsMapTools and contains common stuff to
+            map tools developed for the plugin.  
+     ***************************************************************************/
+        Constructor :
+    
+        :param canvas: The map canvas..
+        :type canvas: QgsMapCanvas
+    """
     def __init__(self, canvas):
-        '''Constructor.
-            :param canvas: The map canvas..
-            :type canvas: QgsMapCanvas
-        '''
         
         # Declare inheritance to QgsMapTool class.
         super(QgsMapTool, self).__init__(canvas)
@@ -25,14 +34,14 @@ class CustomMapTool(QgsMapTool):
         '''Stuff to do when tool is activated.'''
         
         # Create a spatial index on the current layer when the tool is activated.
-        if self.canvas.currentLayer().type() == QgsMapLayer.VectorLayer:
+        if self.canvas.currentLayer() and self.canvas.currentLayer().type() == QgsMapLayer.VectorLayer:
             self.setSpatialIndexToLayer(self.canvas.currentLayer())
         self.canvas.currentLayerChanged.connect(self.setSpatialIndexToLayer)
-        QgsMapLayerRegistry.instance().layerRemoved.connect(self.removeSpatialIndexFromLayerId)
+        QgsMapLayerRegistry.instance().layerWillBeRemoved.connect(self.removeSpatialIndexFromLayerId)
 
     def deactivateMapTool(self):
         '''Stuff to do when tool is activated.'''
-        
+        self.indexCatalog = dict()
         # Disconnect signals if connected.
         try:
             self.canvas.currentLayerChanged.disconnect(self.setSpatialIndexToLayer)
@@ -42,6 +51,7 @@ class CustomMapTool(QgsMapTool):
 
     def popup(self, msg):
         '''Display a popup.
+        
             :param msg: The message to display.
             :type msg: str
         '''
@@ -52,14 +62,15 @@ class CustomMapTool(QgsMapTool):
 
     def screenCoordsToMapPoint(self, x, y):
         '''Converts pixel coordinates to a QgsPoint in map coordinates.
+        
             :param x: x pixel coordinate.
             :type x: int
             
             :param y: y pixel coordinate.
             :type y: int
             
-            :returns : The corresponding point in map coordinates.
-            :rtype : QgsPoint
+            :return: The corresponding point in map coordinates.
+            :rtype: QgsPoint
         '''
         
         point = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
@@ -68,11 +79,12 @@ class CustomMapTool(QgsMapTool):
 
     def getLayerBySpatialIndex(self, spatialIndex):
         '''Get layer corresponding to a given spatial index.
+        
             :param spatialIndex: A spatial index.
             :type spatialIndex: QgsSpatialIndex
             
-            :returns : The layer corresponding to spatial index. None if not found.
-            :rtype : QgsPoint or None
+            :return: The layer corresponding to spatial index. None if not found.
+            :rtype: QgsVectorLayer or None
         '''
         
         for key, value in self.indexCatalog.iteritems():
@@ -83,13 +95,14 @@ class CustomMapTool(QgsMapTool):
     def getIntersectedFeatIdsWithSpatialIdx(self, geometry, spatialIndex):
         '''Get the IDs of features that intersect a given geometry when the layer owning 
             features to intersect has a spatial index.
+            
             :param geometry: Geometry we would features that intersect its.
             :type spatialIndex: QgsGeometry
             
             :param spatialIndex: Spatial index to use.
             :type spatialIndex: QgsSpatialIndex
             
-            :returns : IDs of features or None if no intersections found.
+            :return: IDs of features or None if no intersections found.
             :rtype : list or None
         '''
         
@@ -105,13 +118,14 @@ class CustomMapTool(QgsMapTool):
 
     def getIntersectedFeatures(self, geometry, layer):
         '''Get the features of a given layer that intersect a given geometry.
+        
             :param geometry: Geometry we would features that intersect its.
             :type spatialIndex: QgsGeometry
             
             :param layer: Layer where find intersected features.
             :type layer: QgsVectorLayer
             
-            :returns : Features or None if no intersections found.
+            :return: Features or None if no intersections found.
             :rtype : list or None
         '''
         
@@ -132,13 +146,14 @@ class CustomMapTool(QgsMapTool):
     def getFirstIntersectedFeature(self, geometry, layer):
         '''Get the first feature found, of a given layer, that intersect a given geometry.
             useful to increase performances when one feature has to be found.
+            
             :param geometry: Geometry we would features that intersect its.
             :type geometry: QgsGeometry
             
             :param layer: Layer where find intersected features.
             :type layer: QgsVectorLayer
             
-            :returns : Feature or None if no intersections found.
+            :return: Feature or None if no intersections found.
             :rtype : QgsFeature or None
         '''
         
@@ -157,10 +172,11 @@ class CustomMapTool(QgsMapTool):
 
     def setSpatialIndexToLayer(self, layer):
         '''Create a spatial index to a given layer.
+        
             :param layer: Vector layer.
             :type layer: QgsVectorLayer
             
-            :returns : Spatial index.
+            :return: Spatial index.
             :rtype : QgsSpatialIndex or None
         '''
         
@@ -186,10 +202,11 @@ class CustomMapTool(QgsMapTool):
     
     def getSpatialIndexByLayer(self, layer):
         '''Get spatial index of a given layer.
+        
             :param layer: Vector layer.
             :type layer: QgsVectorLayer
             
-            :returns : Spatial index.
+            :return: Spatial index.
             :rtype : QgsSpatialIndex or None
         '''
         
@@ -199,19 +216,21 @@ class CustomMapTool(QgsMapTool):
     
     def removeSpatialIndexFromLayerId(self, layerId):
         '''Remove spatial index from a given layer ID.
+        
             :param layerId: Vector layer ID.
             :type layerId: int
         '''
         
-        for layer, spatialIdx in self.indexCatalog:
+        for layer, spatialIdx in self.indexCatalog.iteritems():
             if layer.id() == layerId:
                 self.removeSpatialIndexFromLayer(layer)
                 return
 
     def removeSpatialIndexFromLayer(self, layer):
         '''Remove spatial index from a given layer.
-            :param layerId: Vector layer.
-            :type layerId: QgsVectorLayer
+        
+            :param layer: Vector layer.
+            :type layer: QgsVectorLayer
         '''
         
         if layer in self.indexCatalog:
@@ -223,13 +242,14 @@ class CustomMapTool(QgsMapTool):
 
     def getFeatureById(self, layer, featureId):
         '''Get the feature of a given layer by ID.
+        
             :param layer: Layer where search feature.
             :type layer: QgsVectorLayer
             
             :param featureId: Feature ID.
             :type featureId: int
             
-            :returns : Feature or None if not found.
+            :return: Feature or None if not found.
             :rtype : QgsFeature or None
         '''
         
@@ -240,10 +260,11 @@ class CustomMapTool(QgsMapTool):
     
     def addFeatureToSpatialIndex(self, featureToAddId):
         '''Update spatial index when feature is added.
+        
             :param featureToAddId: Feature ID.
             :type featureToAddId: int
             
-            :returns : Updated spatial index.
+            :return: Updated spatial index.
             :rtype : QgsSpatialIndex
         '''
         
@@ -257,10 +278,11 @@ class CustomMapTool(QgsMapTool):
 
     def deleteFeatureFromSpatialIndex(self, featureToDeleteId):
         '''Update spatial index when feature is deleted.
+        
             :param featureToDeleteId: Feature ID.
             :type featureToDeleteId: int
             
-            :returns : Updated spatial index.
+            :return: Updated spatial index.
             :rtype : QgsSpatialIndex
         '''
         
