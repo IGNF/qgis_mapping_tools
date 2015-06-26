@@ -1,6 +1,6 @@
 
-from PyQt4.QtGui import QMessageBox
-from qgis.gui import QgsMapCanvas, QgsMapTool
+from PyQt4.QtGui import QMessageBox, QPixmap, QColor, QGraphicsScene
+from qgis.gui import QgsMapCanvas, QgsMapTool, QgsRubberBand
 from qgis.core import QgsGeometry, QgsPoint, QgsSpatialIndex, QgsFeatureRequest, QgsMapLayer, QgsMapLayerRegistry
 
 class CustomMapTool(QgsMapTool):
@@ -11,16 +11,16 @@ class CustomMapTool(QgsMapTool):
             Class that inherits from QgsMapTools and contains common stuff to
             map tools developed for the plugin.  
      ***************************************************************************/
-        Constructor :
+    """
+    def __init__(self, canvas):
+        """Constructor :
     
         :param canvas: The map canvas..
         :type canvas: QgsMapCanvas
-    """
-    def __init__(self, canvas):
-        
+        """
         # Declare inheritance to QgsMapTool class.
         super(QgsMapTool, self).__init__(canvas)
-        
+
         # Attributes.
         self.canvas = canvas
         self.indexCatalog = dict()
@@ -32,7 +32,7 @@ class CustomMapTool(QgsMapTool):
 
     def activateMapTool(self):
         '''Stuff to do when tool is activated.'''
-        
+
         # Create a spatial index on the current layer when the tool is activated.
         if self.canvas.currentLayer() and self.canvas.currentLayer().type() == QgsMapLayer.VectorLayer:
             self.setSpatialIndexToLayer(self.canvas.currentLayer())
@@ -45,7 +45,7 @@ class CustomMapTool(QgsMapTool):
         # Disconnect signals if connected.
         try:
             self.canvas.currentLayerChanged.disconnect(self.setSpatialIndexToLayer)
-            QgsMapLayerRegistry.instance().layerRemoved.disconnect(self.removeSpatialIndexFromLayerId)
+            QgsMapLayerRegistry.instance().layerWillBeRemoved.disconnect(self.removeSpatialIndexFromLayerId)
         except:
             pass
 
@@ -103,7 +103,7 @@ class CustomMapTool(QgsMapTool):
             :type spatialIndex: QgsSpatialIndex
             
             :return: IDs of features or None if no intersections found.
-            :rtype : list or None
+            :rtype: list or None
         '''
         
         intersectFeatIds=[]
@@ -126,7 +126,7 @@ class CustomMapTool(QgsMapTool):
             :type layer: QgsVectorLayer
             
             :return: Features or None if no intersections found.
-            :rtype : list or None
+            :rtype: list or None
         '''
         
         intersectedFeatures = []
@@ -154,7 +154,7 @@ class CustomMapTool(QgsMapTool):
             :type layer: QgsVectorLayer
             
             :return: Feature or None if no intersections found.
-            :rtype : QgsFeature or None
+            :rtype: QgsFeature or None
         '''
         
         if layer in self.indexCatalog:
@@ -177,7 +177,7 @@ class CustomMapTool(QgsMapTool):
             :type layer: QgsVectorLayer
             
             :return: Spatial index.
-            :rtype : QgsSpatialIndex or None
+            :rtype: QgsSpatialIndex or None
         '''
         
         print self.indexCatalog
@@ -207,7 +207,7 @@ class CustomMapTool(QgsMapTool):
             :type layer: QgsVectorLayer
             
             :return: Spatial index.
-            :rtype : QgsSpatialIndex or None
+            :rtype: QgsSpatialIndex or None
         '''
         
         if layer in self.indexCatalog:
@@ -221,7 +221,7 @@ class CustomMapTool(QgsMapTool):
             :type layerId: int
         '''
         
-        for layer, spatialIdx in self.indexCatalog.iteritems():
+        for layer in self.indexCatalog:
             if layer.id() == layerId:
                 self.removeSpatialIndexFromLayer(layer)
                 return
@@ -250,7 +250,7 @@ class CustomMapTool(QgsMapTool):
             :type featureId: int
             
             :return: Feature or None if not found.
-            :rtype : QgsFeature or None
+            :rtype: QgsFeature or None
         '''
         
         for feature in layer.getFeatures():
@@ -265,17 +265,19 @@ class CustomMapTool(QgsMapTool):
             :type featureToAddId: int
             
             :return: Updated spatial index.
-            :rtype : QgsSpatialIndex
+            :rtype: QgsSpatialIndex
         '''
-        
+
         # Get the current layer
         layer = self.indexCatalogCursor
         spatialIndex = self.getSpatialIndexByLayer(layer)
-        featureToAdd = self.getFeatureById(layer, featureToAddId)
-        if featureToAdd:
-            spatialIndex.insertFeature({featureToAddId: featureToAdd}.values()[0])
-        return spatialIndex
-
+        if spatialIndex:
+            featureToAdd = self.getFeatureById(layer, featureToAddId)
+            if featureToAdd:
+                spatialIndex.insertFeature({featureToAddId: featureToAdd}.values()[0])
+            return spatialIndex
+        return None
+    
     def deleteFeatureFromSpatialIndex(self, featureToDeleteId):
         '''Update spatial index when feature is deleted.
         
@@ -283,7 +285,7 @@ class CustomMapTool(QgsMapTool):
             :type featureToDeleteId: int
             
             :return: Updated spatial index.
-            :rtype : QgsSpatialIndex
+            :rtype: QgsSpatialIndex
         '''
         
         # Get the current layer
@@ -293,3 +295,64 @@ class CustomMapTool(QgsMapTool):
         if featureToDelete:
             spatialIndex.deleteFeature(featureToDelete)
         return spatialIndex
+    
+    def createMoveTrack(self, line=True, color=QColor(255, 71, 25, 255), width=0.2):
+        '''Create move track.
+        
+            :param line: Flag indicating if geometry to draw is a line (True)
+                or a polygon(False).
+            :type line: bool
+        
+            :param color: Color of line.
+            :type color: QColor
+            
+            :param width: Width of line.
+            :type width: int
+            
+            :return: Created rubber band. 
+            :rtype: QgsRubberBand
+        '''
+        
+        moveTrack = QgsRubberBand(self.canvas, line)
+        moveTrack.setColor(color)
+        moveTrack.setWidth(width)
+        return moveTrack
+    
+    def getMoveTrack(self):
+        '''Find and return move track.
+        
+            :return: Rubber band. 
+            :rtype: QgsRubberBand
+        '''
+        
+        for sceneItem in self.canvas.scene().items():
+            if isinstance(sceneItem, QgsRubberBand):
+                return sceneItem
+        return None
+    
+    def updateMoveTrack(self, geometry):
+        '''Update drawn move track.
+        
+            :param point: New point hovered by mouse cursor.
+            :type point: QgsGeometry
+        '''
+        if self.getMoveTrack():
+            if geometry.type() == 1 or geometry.type() == 2: # Geometry is polyline or polygon
+                self.getMoveTrack().setToGeometry(geometry, None)
+    
+    def destroyMovetrack(self):
+        '''Destroy drawn move track.'''
+        if self.getMoveTrack():
+            self.canvas.scene().removeItem(self.getMoveTrack())
+
+
+    def isMoveTrackValid(self):
+        '''Check if move track is not None and not empty.
+            
+            :return: True if valid. 
+            :rtype: bool
+        '''
+        
+        if self.getMoveTrack() and self.getMoveTrack().asGeometry():
+            return True
+        return False

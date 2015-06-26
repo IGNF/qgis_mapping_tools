@@ -1,7 +1,7 @@
 
-from qgis.gui import QgsMapTool, QgsMapCanvas, QgsRubberBand
+from qgis.gui import QgsMapTool, QgsMapCanvas
 from qgis.core import QgsMapLayer, QgsMapToPixel, QgsFeature, QgsFeatureRequest, QgsGeometry, QgsPoint, QgsSpatialIndex, QgsMapLayerRegistry
-from PyQt4.QtGui import QCursor, QPixmap, QColor, QGraphicsScene
+from PyQt4.QtGui import QCursor
 from PyQt4.QtCore import Qt
 from custom_maptool import CustomMapTool
 class Fusion(CustomMapTool):
@@ -11,13 +11,14 @@ class Fusion(CustomMapTool):
             
             Do the stuff merging features.
      ***************************************************************************/
-        Constructor :
-    
-        :param iface : Interface of QGIS.
-        :type iface : QgisInterface
-    """
+     """
     def __init__(self, iface):
-        '''Constructor.'''
+        """
+        Constructor.
+    
+        :param iface: Interface of QGIS.
+        :type iface: QgisInterface
+        """
         
         # Declare inheritance to CustomMapTool
         CustomMapTool.__init__(self, iface.mapCanvas())
@@ -42,59 +43,24 @@ class Fusion(CustomMapTool):
         
         super(Fusion, self).deactivateMapTool()
         self.canvas.setMouseTracking(True)
-    
-    def createMoveTrack(self, color, width):
-        '''Create move track.
         
-            :param color : Color of line.
-            :type color : QColor
-            
-            :param width : Width of line.
-            :type width : int
-            
-            :return: Created rubber band. 
-            :rtype: QgsRubberBand
+    def updateTrackPoints(self, point):
         '''
+        Add point to the hovered by mouse cursor points list and update move track.
         
-        moveTrack = QgsRubberBand(self.canvas, True)
-        moveTrack.setColor(color)
-        moveTrack.setWidth(width)
-        return moveTrack
-    
-    def getMoveTrack(self):
-        '''Find and return move track.
-        
-            :return: Rubber band. 
-            :rtype: QgsRubberBand
-        '''
-        
-        for sceneItem in self.canvas.scene().items():
-            if isinstance(sceneItem, QgsRubberBand):
-                return sceneItem
-        return None
-    
-    def updateMoveTrack(self, point):
-        '''Update drawn move track.
-        
-            :param point : New point hovered by mouse cursor.
-            :type point : QgsPoint
-            
-            :return: Updated rubber band. 
-            :rtype: QgsRubberBand
+        :param point: Point to add.
+        :type point: QgsPoint
         '''
         
         self.trackPoints.append(point)
-        moveTrack = self.getMoveTrack()
-        if moveTrack:
-            moveTrack.setToGeometry(QgsGeometry.fromPolyline(self.trackPoints), None)
-            return moveTrack
-        return None
+        if len(self.trackPoints) > 1:
+            self.updateMoveTrack(QgsGeometry.fromPolyline(self.trackPoints))
 
     def isLayerValid(self, layer):
         '''Check if layer is not None, of vector type and not empty.
         
-            :param layer : Layer to check.
-            :type layer : QgsMapLayer
+            :param layer: Layer to check.
+            :type layer: QgsMapLayer
             
             :return: True if valid. 
             :rtype: bool
@@ -104,23 +70,12 @@ class Fusion(CustomMapTool):
             return True
         return False
 
-    def isMoveTrackValid(self):
-        '''Check if move track is not None and not empty.
-            
-            :return: True if valid. 
-            :rtype: bool
-        '''
-        
-        if self.getMoveTrack() and self.getMoveTrack().asGeometry():
-            return True
-        return False
-
     def resetAction(self):
         '''Reset merge operation (move track list and merged feature).'''
         
         self.mergedFeature = None
         self.trackPoints = []
-        self.canvas.scene().removeItem(self.getMoveTrack())
+        self.destroyMovetrack()
 
     def cancelAction(self):
         '''Cancel merge operation in case of problem.'''
@@ -148,7 +103,7 @@ class Fusion(CustomMapTool):
             return
         
         # Init move track object.
-        self.createMoveTrack(QColor(255, 71, 25), 0.2)
+        self.createMoveTrack()
         
         # Convert clicked point in pixel coordinates to map coordinates point
         mapPoint = self.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
@@ -157,7 +112,7 @@ class Fusion(CustomMapTool):
         self.mergedFeature = self.getFirstIntersectedFeature(QgsGeometry.fromPoint(mapPoint), layer)
         
         # Begin to draw move track with the first clicked point.
-        self.updateMoveTrack(mapPoint)
+        self.updateTrackPoints(mapPoint)
             
     def canvasMoveEvent(self, event):
         '''Override slot fired when mouse is moved.'''
@@ -170,7 +125,7 @@ class Fusion(CustomMapTool):
             self.mergedFeature = self.getFirstIntersectedFeature(QgsGeometry.fromPoint(mapPoint), layer)
         
         # Draw move track.
-        self.updateMoveTrack(mapPoint)
+        self.updateTrackPoints(mapPoint)
 
     def canvasReleaseEvent(self, event):
         '''Override slot fired when mouse is released.'''

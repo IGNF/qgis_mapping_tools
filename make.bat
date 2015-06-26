@@ -168,7 +168,7 @@ if "%1" == "doc" (
 	echo.Auto-generating html doc.
 	echo.--------------------------------
 	cd help
-	call make html 
+	call make html
 	cd ..
 	goto end
 )

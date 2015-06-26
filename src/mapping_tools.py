@@ -21,7 +21,7 @@ from qgis.core import QgsMapLayerRegistry, QgsMapLayer, QgsVectorLayer, QgsAppli
 from qgis.gui import QgisInterface, QgsMapTool, QgsMapToolZoom
 
 # Initialize Qt resources from file resources.py
-from resources import resources_rc
+import resources_rc
 
 from custom_action import CustomAction
 from import_feature import ImportFeature

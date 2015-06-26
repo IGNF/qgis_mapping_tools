@@ -29,10 +29,10 @@ class TestMappingTools(object):
     def __init__(self):
         '''Constructor.
         
-            :param iface: An interface instance that will be passed to this class
-            which provides the hook by which you can manipulate the QGIS
-            application at run time.
-            :type iface: QgsInterface
+        :param iface: An interface instance that will be passed to this class
+        which provides the hook by which you can manipulate the QGIS
+        application at run time.
+        :type iface: QgsInterface
         '''
         self.mouse = PyMouse()
         self.keyboard = PyKeyboard()

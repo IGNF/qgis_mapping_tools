@@ -13,19 +13,20 @@ class ImportFeature(CustomMapTool):
             
             Do the stuff importing a feature from a vector layer to another.
      ***************************************************************************/
+     """
+    def __init__(self, iface):
+        """
         Constructor :
     
-        :param iface : Interface of QGIS.
-        :type iface : QgisInterface
-    """
-    def __init__(self, iface):
-        '''Constructor.'''
+        :param iface: Interface of QGIS.
+        :type iface: QgisInterface
+        """
         
         # Declare inheritance to CustomMapTool class
         CustomMapTool.__init__(self, iface.mapCanvas())
         
+        self.iface = iface
         self.canvas = iface.mapCanvas()
-        
         # Load Qt UI dialog widget from dir path
         pluginDirectory = os.path.dirname(__file__)
         self.importFeatureSelector = loadUi( os.path.join(pluginDirectory, "importFeatureSelector.ui"))
@@ -43,9 +44,12 @@ class ImportFeature(CustomMapTool):
         self.importFeatureSelector.show()
         self.updateSourceLayerSelector()
         QgsMapLayerRegistry.instance().layersRemoved.connect(self.updateSourceLayerSelector)
-        QgsMapLayerRegistry.instance().legendLayersAdded.connect(self.updateSourceLayerSelector)
+        QgsMapLayerRegistry.instance().layersAdded.connect(self.updateSourceLayerSelector)
         self.canvas.currentLayerChanged.connect(self.updateSourceLayerSelector)
-        
+        print self.iface.layerTreeView().currentNode()
+        if self.iface.layerTreeView().currentNode().parent():
+            self.iface.layerTreeView().currentNode().parent().visibilityChanged.connect(self.updateSourceLayerSelector)
+
     def deactivateMapTool(self):
         '''Override CustomMapTool method to add specific stuff at tool deactivating.'''
         
@@ -53,16 +57,19 @@ class ImportFeature(CustomMapTool):
         super(ImportFeature, self).deactivateMapTool()
         
         self.importFeatureSelector.close()
+        self.destroyMovetrack()
         try:
             QgsMapLayerRegistry.instance().layersRemoved.disconnect(self.updateSourceLayerSelector)
-            QgsMapLayerRegistry.instance().legendLayersAdded.disconnect(self.updateSourceLayerSelector)
+            QgsMapLayerRegistry.instance().layersAdded.disconnect(self.updateSourceLayerSelector)
             self.canvas.currentLayerChanged.disconnect(self.updateSourceLayerSelector)
+            self.iface.layerTreeView().currentNode().visibilityChanged.disconnect(self.updateSourceLayerSelector())
         except:
             pass
 
     def updateSourceLayerSelector(self):
         '''Update list dialog widget as soon as there is a change into layer tree.'''
         
+        print 'upd source'
         # Get layers list.
         sourceLayerList = self.importFeatureSelector.findChildren(QListWidget)[0]
         sourceLayerList.clear()
@@ -74,9 +81,10 @@ class ImportFeature(CustomMapTool):
         for layer in layers:
             if layer.type() == QgsMapLayer.VectorLayer and layer != self.canvas.currentLayer():
                 sourceLayerList.addItem(layer.name())
+                layer.layerModified.connect(self.updateSourceLayerSelector)
                 layerAdded = True
         if not layerAdded:
-            sourceLayerList.addItem("Ajouter au moins une couche")
+            sourceLayerList.addItem("Afficher au moins une autre couche vecteur")
         sourceLayerList.setCurrentRow(0)
 
     def getSourceLayer(self):
@@ -97,8 +105,8 @@ class ImportFeature(CustomMapTool):
     def getGeomToImportByPoint(self, point):
         '''Get intersection between features of destination layer and source layer under a point.
         
-            :param: Geometry containing point.
-            :type: QgsGeometry
+            :param point: Geometry containing point.
+            :type point: QgsGeometry
             
             :return: Intersection or None if not found.
             :rtype: QgsGeometry or None
@@ -169,5 +177,18 @@ class ImportFeature(CustomMapTool):
                 
             # End of editing buffer
             destinationLayer.endEditCommand()
+            self.destroyMovetrack()
             
             self.canvas.refresh()
+            
+    def canvasMoveEvent(self, event):
+        '''Override slot fired when mouse is moved.'''
+        if self.getSourceLayer():
+            mapPoint = self.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
+            ringToDisplay = self.getFirstIntersectedFeature(QgsGeometry.fromPoint(mapPoint), self.getSourceLayer())
+            if ringToDisplay:
+                if not self.getMoveTrack():
+                    self.createMoveTrack(False, QColor(255, 71, 25, 170))
+                self.updateMoveTrack(ringToDisplay.geometry())
+            else:
+                self.destroyMovetrack()
