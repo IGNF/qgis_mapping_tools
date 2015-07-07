@@ -145,7 +145,6 @@ class CustomAction(QAction):
         '''
         
         if iface.mapCanvas().currentLayer():
-            print 'is editable : '+str(iface.mapCanvas().currentLayer().isEditable())
             self.enableAction(iface.mapCanvas().currentLayer().isEditable())
         else:
             self.enableAction(False)

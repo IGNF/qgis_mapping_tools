@@ -24,7 +24,6 @@ class CustomMapTool(QgsMapTool):
         # Attributes.
         self.canvas = canvas
         self.indexCatalog = dict()
-        self.indexCatalogCursor = None
 
         # Slots to activate / deactivate the tool
         self.activated.connect(self.activateMapTool)
@@ -180,24 +179,23 @@ class CustomMapTool(QgsMapTool):
             :rtype: QgsSpatialIndex or None
         '''
         
-        print self.indexCatalog
-        
         if layer and layer.type() == QgsMapLayer.VectorLayer:
             
             # (Re)construct spatial index.
-            if layer in self.indexCatalog:
-                self.removeSpatialIndexFromLayer(layer)
-            spatialIndex = QgsSpatialIndex(layer.getFeatures())
-            
-            # Add spatial index to dictionary to retrieve it.
-            self.indexCatalog[layer] = spatialIndex
-            # Update a cursor that let to retrieve current used spatial index.
-            self.indexCatalogCursor = layer
-            
-            # Connect slots to layer changes to update spatial index.
-            layer.featureAdded.connect(self.addFeatureToSpatialIndex)
-            layer.featureDeleted.connect(self.deleteFeatureFromSpatialIndex)
-            return spatialIndex
+            if not layer in self.indexCatalog:
+                spatialIndex = QgsSpatialIndex(layer.getFeatures())
+                
+                # Add spatial index to dictionary to retrieve it.
+                self.indexCatalog[layer] = spatialIndex
+                
+                # Connect slots to layer changes to update spatial index.
+                layer.featureAdded.connect(self.addFeatureToSpatialIndex)
+                layer.featureDeleted.connect(self.deleteFeatureFromSpatialIndex)
+                print 'debut catalog'
+                for layer in self.indexCatalog:
+                    print layer.name() + ' : ' +str(layer)
+                print 'fin catalog'
+                return spatialIndex
         return None
     
     def getSpatialIndexByLayer(self, layer):
@@ -268,15 +266,12 @@ class CustomMapTool(QgsMapTool):
             :rtype: QgsSpatialIndex
         '''
 
-        # Get the current layer
-        layer = self.indexCatalogCursor
-        spatialIndex = self.getSpatialIndexByLayer(layer)
-        if spatialIndex:
+        layer = self.canvas.currentLayer()
+        if layer:
+            spatialIndex = self.getSpatialIndexByLayer(layer)
             featureToAdd = self.getFeatureById(layer, featureToAddId)
-            if featureToAdd:
+            if featureToAdd and spatialIndex:
                 spatialIndex.insertFeature({featureToAddId: featureToAdd}.values()[0])
-            return spatialIndex
-        return None
     
     def deleteFeatureFromSpatialIndex(self, featureToDeleteId):
         '''Update spatial index when feature is deleted.
@@ -288,13 +283,12 @@ class CustomMapTool(QgsMapTool):
             :rtype: QgsSpatialIndex
         '''
         
-        # Get the current layer
-        layer = self.indexCatalogCursor
-        spatialIndex = self.getSpatialIndexByLayer(layer)
-        featureToDelete = self.getFeatureById(layer, featureToDeleteId)
-        if featureToDelete:
-            spatialIndex.deleteFeature(featureToDelete)
-        return spatialIndex
+        layer = self.canvas.currentLayer()
+        if layer:
+            spatialIndex = self.getSpatialIndexByLayer(layer)
+            featureToDelete = self.getFeatureById(layer, featureToDeleteId)
+            if featureToDelete and spatialIndex:
+                spatialIndex.deleteFeature(featureToDelete)
     
     def createMoveTrack(self, line=True, color=QColor(255, 71, 25, 255), width=0.2):
         '''Create move track.
@@ -344,7 +338,6 @@ class CustomMapTool(QgsMapTool):
         '''Destroy drawn move track.'''
         if self.getMoveTrack():
             self.canvas.scene().removeItem(self.getMoveTrack())
-
 
     def isMoveTrackValid(self):
         '''Check if move track is not None and not empty.
