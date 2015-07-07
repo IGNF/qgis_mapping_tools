@@ -29,7 +29,7 @@ class ImportFeature(CustomMapTool):
         self.canvas = iface.mapCanvas()
         # Load Qt UI dialog widget from dir path
         pluginDirectory = os.path.dirname(__file__)
-        self.importFeatureSelector = loadUi( os.path.join(pluginDirectory, "importFeatureSelector.ui"))
+        self.sourceLayerSelector = loadUi( os.path.join(pluginDirectory, "sourcelayerselector.ui"))
 
     def activateMapTool(self):
         '''Override CustomMapTool method to add specific stuff at tool activating.'''
@@ -41,7 +41,7 @@ class ImportFeature(CustomMapTool):
         self.canvas.setCursor(Qt.CrossCursor)
         
         # Show the dialog
-        self.importFeatureSelector.show()
+        self.iface.addDockWidget( Qt.LeftDockWidgetArea, self.sourceLayerSelector)
         
         self.updateSourceLayerSelector()
         QgsMapLayerRegistry.instance().layersRemoved.connect(self.updateSourceLayerSelector)
@@ -50,7 +50,7 @@ class ImportFeature(CustomMapTool):
         if self.iface.layerTreeView().currentNode().parent():
             self.iface.layerTreeView().currentNode().parent().visibilityChanged.connect(self.updateSourceLayerSelector)
         self.setSourceLayerSpatialIdx()
-        self.importFeatureSelector.findChildren(QListWidget)[0].currentItemChanged.connect(self.setSourceLayerSpatialIdx)
+        self.sourceLayerSelector.findChildren(QListWidget)[0].currentItemChanged.connect(self.setSourceLayerSpatialIdx)
 
     def deactivateMapTool(self):
         '''Override CustomMapTool method to add specific stuff at tool deactivating.'''
@@ -65,7 +65,7 @@ class ImportFeature(CustomMapTool):
         # Declare override.
         super(ImportFeature, self).deactivateMapTool()
         
-        self.importFeatureSelector.close()
+        self.sourceLayerSelector.close()
         self.destroyMovetrack()
         
         try:
@@ -99,7 +99,7 @@ class ImportFeature(CustomMapTool):
         '''Update list dialog widget as soon as there is a change into layer tree.'''
         
         # Get layers list.
-        sourceLayerList = self.importFeatureSelector.findChildren(QListWidget)[0]
+        sourceLayerList = self.sourceLayerSelector.findChildren(QListWidget)[0]
         sourceLayerList.clear()
         layers = self.canvas.layers() # replace canvas by iface.legendInterface() to include non visible layers on the map.
         print layers
@@ -122,7 +122,7 @@ class ImportFeature(CustomMapTool):
             :rtype: QgsVectorLayer or None
         '''
         
-        selectedItem = self.importFeatureSelector.findChildren(QListWidget)[0].currentItem()
+        selectedItem = self.sourceLayerSelector.findChildren(QListWidget)[0].currentItem()
         if selectedItem:
             sourceLayerName = selectedItem.text()
             return self.getLayerByName(sourceLayerName)
@@ -186,7 +186,7 @@ class ImportFeature(CustomMapTool):
                 if ringToImport and featureToPierce:
                     
                     if not ringToImport.equals(featureToPierce.geometry()): # Do not import feature already into destination layer
-                            
+                        
                         # Begin buffer that will let user to undo / redo action. 
                         destinationLayer.beginEditCommand("Import feature")
                         
@@ -202,7 +202,11 @@ class ImportFeature(CustomMapTool):
                         # Construct a new feature retrieving pierced feature fields values.
                         differenceFeature = QgsFeature(featureToPierce)
                         difference = featureToPierce.geometry().difference(ringToImport)
-                        
+                        if not difference:
+                            destinationLayer.destroyEditCommand()
+                            self.popup('Geometrie invalide')
+                            return
+                            
                         if difference.isMultipart(): # If multipart difference, we add as many features as parts.
                             for part in difference.asGeometryCollection():
                                 differenceFeature.setGeometry(part)

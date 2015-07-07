@@ -24,7 +24,7 @@ set PY_FILES= ^
 	src\__init__.py ^
 	src\custom_action.py
 
-set UI_FILES=ui\importFeatureSelector.ui
+set UI_FILES=ui\sourcelayerselector.ui
 
 set EXTRAS=metadata.txt
 
