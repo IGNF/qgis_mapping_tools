@@ -28,7 +28,7 @@ homepage=http://carhab-depot.ign.fr/doc_utilisateur_mapping_tools_qgis.pdf
 tracker=http://gitlab.dockerforge.ign.fr/environnement/qgis_mapping_tools/issues
 repository=http://gitlab.dockerforge.ign.fr/environnement/qgis_mapping_tools.git
 category=Plugins
-icon=icon.png
+icon=mapping_tools.png
 # experimental flag
 experimental=True
 
