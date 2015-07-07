@@ -191,10 +191,10 @@ class CustomMapTool(QgsMapTool):
                 # Connect slots to layer changes to update spatial index.
                 layer.featureAdded.connect(self.addFeatureToSpatialIndex)
                 layer.featureDeleted.connect(self.deleteFeatureFromSpatialIndex)
-                print 'debut catalog'
+                """"print 'debut catalog'
                 for layer in self.indexCatalog:
                     print layer.name() + ' : ' +str(layer)
-                print 'fin catalog'
+                print 'fin catalog'"""
                 return spatialIndex
         return None
     
