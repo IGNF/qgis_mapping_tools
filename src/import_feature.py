@@ -170,59 +170,60 @@ class ImportFeature(CustomMapTool):
     def canvasPressEvent(self, event):
         '''Override slot fired when mouse is pressed.'''
         
-        destinationLayer = self.canvas.currentLayer()
-        
-        # Convert pixel coordinates of click event to QgsPoint in map coordinates.
-        mapPoint = self.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
-        
-        if destinationLayer and mapPoint:
-        
-            # Find feature in destination layer that will be pierced by the import of new feature.
-            featureToPierce = self.getFirstIntersectedFeature(QgsGeometry().fromPoint(mapPoint), destinationLayer)
-            # Find geometry of feature to import.
-            ringToImport = self.getGeomToImportByPoint(QgsGeometry().fromPoint(mapPoint))
+        if event.button() == 1: # Do action only if left button was clicked
+            destinationLayer = self.canvas.currentLayer()
             
-            if ringToImport and featureToPierce:
+            # Convert pixel coordinates of click event to QgsPoint in map coordinates.
+            mapPoint = self.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
+            
+            if destinationLayer and mapPoint:
+            
+                # Find feature in destination layer that will be pierced by the import of new feature.
+                featureToPierce = self.getFirstIntersectedFeature(QgsGeometry().fromPoint(mapPoint), destinationLayer)
+                # Find geometry of feature to import.
+                ringToImport = self.getGeomToImportByPoint(QgsGeometry().fromPoint(mapPoint))
                 
-                if not ringToImport.equals(featureToPierce.geometry()): # Do not import feature already into destination layer
+                if ringToImport and featureToPierce:
+                    
+                    if not ringToImport.equals(featureToPierce.geometry()): # Do not import feature already into destination layer
+                            
+                        # Begin buffer that will let user to undo / redo action. 
+                        destinationLayer.beginEditCommand("Import feature")
                         
-                    # Begin buffer that will let user to undo / redo action. 
-                    destinationLayer.beginEditCommand("Import feature")
-                    
-                    # Contruct a new feature with fields of destination layer features and geometry corresponding to intersection.
-                    fields = featureToPierce.fields()
-                    ringFeature = QgsFeature(fields)
-                    ringFeature.setGeometry(ringToImport)
-                    
-                    # Add new feature to destination layer
-                    if not destinationLayer.addFeature(ringFeature):
-                        destinationLayer.destroyEditCommand() # If fail, undo all action and destroy editing buffer.
-                    
-                    # Construct a new feature retrieving pierced feature fields values.
-                    differenceFeature = QgsFeature(featureToPierce)
-                    difference = featureToPierce.geometry().difference(ringToImport)
-                    
-                    if difference.isMultipart(): # If multipart difference, we add as many features as parts.
-                        for part in difference.asGeometryCollection():
-                            differenceFeature.setGeometry(part)
+                        # Contruct a new feature with fields of destination layer features and geometry corresponding to intersection.
+                        fields = featureToPierce.fields()
+                        ringFeature = QgsFeature(fields)
+                        ringFeature.setGeometry(ringToImport)
+                        
+                        # Add new feature to destination layer
+                        if not destinationLayer.addFeature(ringFeature):
+                            destinationLayer.destroyEditCommand() # If fail, undo all action and destroy editing buffer.
+                        
+                        # Construct a new feature retrieving pierced feature fields values.
+                        differenceFeature = QgsFeature(featureToPierce)
+                        difference = featureToPierce.geometry().difference(ringToImport)
+                        
+                        if difference.isMultipart(): # If multipart difference, we add as many features as parts.
+                            for part in difference.asGeometryCollection():
+                                differenceFeature.setGeometry(part)
+                                if not destinationLayer.addFeature(differenceFeature):
+                                    destinationLayer.destroyEditCommand()
+                        else:
+                            differenceFeature.setGeometry(difference)
+                            
+                            # Add difference feature or undo all action if fail.
                             if not destinationLayer.addFeature(differenceFeature):
                                 destinationLayer.destroyEditCommand()
-                    else:
-                        differenceFeature.setGeometry(difference)
                         
-                        # Add difference feature or undo all action if fail.
-                        if not destinationLayer.addFeature(differenceFeature):
+                        # Delete origin pierced feature or undo all action if fail.
+                        if not destinationLayer.deleteFeature(featureToPierce.id()):
                             destinationLayer.destroyEditCommand()
-                    
-                    # Delete origin pierced feature or undo all action if fail.
-                    if not destinationLayer.deleteFeature(featureToPierce.id()):
-                        destinationLayer.destroyEditCommand()
+                            
+                        # End of editing buffer
+                        destinationLayer.endEditCommand()
+                        self.destroyMovetrack()
                         
-                    # End of editing buffer
-                    destinationLayer.endEditCommand()
-                    self.destroyMovetrack()
-                    
-                    self.canvas.refresh()
+                        self.canvas.refresh()
             
     def canvasMoveEvent(self, event):
         '''Override slot fired when mouse is moved.'''
