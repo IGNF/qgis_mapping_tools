@@ -228,16 +228,18 @@ class ImportFeature(CustomMapTool):
                         self.destroyMovetrack()
                         
                         self.canvas.refresh()
+
             
     def canvasMoveEvent(self, event):
         '''Override slot fired when mouse is moved.'''
         
-        if self.getSourceLayer():
-            mapPoint = self.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
-            ringToDisplay = self.getFirstIntersectedFeature(QgsGeometry.fromPoint(mapPoint), self.getSourceLayer())
-            if ringToDisplay:
-                if not self.getMoveTrack():
-                    self.createMoveTrack(False, QColor(255, 71, 25, 170))
-                self.updateMoveTrack(ringToDisplay.geometry())
-            else:
-                self.destroyMovetrack()
+        if not self.isMoveTrackAtPos(event.pos().x(), event.pos().y()): # If move track already computed, anything to do
+            if self.getSourceLayer():
+                mapPoint = self.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
+                ringToDisplay = self.getGeomToImportByPoint(QgsGeometry().fromPoint(mapPoint))
+                if ringToDisplay:
+                    if not self.getMoveTrack():
+                        self.createMoveTrack(False, QColor(255, 71, 25, 170))
+                    self.updateMoveTrack(ringToDisplay)
+                else:
+                    self.destroyMovetrack()

@@ -349,3 +349,21 @@ class CustomMapTool(QgsMapTool):
         if self.getMoveTrack() and self.getMoveTrack().asGeometry():
             return True
         return False
+
+    def isMoveTrackAtPos(self, x, y):
+        '''Test existence of move track under the given position.
+        
+            :param x: Abciss position in pixels
+            :type x: int
+            
+            :param y: Ordinate position in pixels
+            :type y: int
+        
+            :return: True if move track, False else. 
+            :rtype: bool
+        '''
+        pos = self.screenCoordsToMapPoint(x, y)
+        if self.isMoveTrackValid():
+            return self.getMoveTrack().asGeometry().contains(pos)
+        return False
+    
