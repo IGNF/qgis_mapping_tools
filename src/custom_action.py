@@ -73,7 +73,7 @@ class CustomAction(QAction):
         :type checkable: bool
         '''
         # Declare inheritance to QAction class.
-        super(QAction, self).__init__(QIcon(iconPath), text, parent)
+        super(QAction, self).__init__(QIcon(iconPath), text.decode('utf-8'), parent)
         
         self.addToMenu = addToMenu
         self.addToToolbar = addToToolbar

@@ -92,7 +92,7 @@ class ImportFeature(CustomMapTool):
     def setSourceLayerSpatialIdx(self):
         '''Index the source layer.'''
         
-        if self.getSourceLayer():
+        if self.getSourceLayer() and self.getSourceLayer().featureCount() > 0:
             self.setSpatialIndexToLayer(self.getSourceLayer())
 
     def updateSourceLayerSelector(self):
@@ -102,7 +102,6 @@ class ImportFeature(CustomMapTool):
         sourceLayerList = self.sourceLayerSelector.findChildren(QListWidget)[0]
         sourceLayerList.clear()
         layers = self.canvas.layers() # replace canvas by iface.legendInterface() to include non visible layers on the map.
-        print layers
         
         # Fill the list.
         layerAdded = False
@@ -233,13 +232,13 @@ class ImportFeature(CustomMapTool):
     def canvasMoveEvent(self, event):
         '''Override slot fired when mouse is moved.'''
         
-        if not self.isMoveTrackAtPos(event.pos().x(), event.pos().y()): # If move track already computed, anything to do
-            if self.getSourceLayer():
-                mapPoint = self.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
-                ringToDisplay = self.getGeomToImportByPoint(QgsGeometry().fromPoint(mapPoint))
-                if ringToDisplay:
-                    if not self.getMoveTrack():
-                        self.createMoveTrack(False, QColor(255, 71, 25, 170))
-                    self.updateMoveTrack(ringToDisplay)
-                else:
-                    self.destroyMovetrack()
+        #if not self.isMoveTrackAtPos(event.pos().x(), event.pos().y()): # If move track already computed, anything to do
+        if self.getSourceLayer():
+            mapPoint = self.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
+            ringToDisplay = self.getGeomToImportByPoint(QgsGeometry().fromPoint(mapPoint))
+            if ringToDisplay:
+                if not self.getMoveTrack():
+                    self.createMoveTrack(False, QColor(255, 71, 25, 170))
+                self.updateMoveTrack(ringToDisplay)
+            else:
+                self.destroyMovetrack()
