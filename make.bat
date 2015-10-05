@@ -3,12 +3,14 @@
 REM save the path:
 if not exist tmp.txt echo %PATH%> tmp.txt
 
-call c:\OSGeo4W\bin\o4w_env.bat
+set ROOT=C:\Program Files\QGIS WIEN
 
-set PYTHONPATH=C:\OSGeo4W\apps\qgis\python;%PYTHONPATH%
-set PATH=C:\OSGeo4W\bin;%PATH%
-set PATH=C:\OSGeo4W\apps\qgis\bin;%PATH%
-set PYTHONPATH=C:\OSGeo4W\apps\qgis\python\plugins;%PYTHONPATH%
+call %ROOT%\o4w_env.bat
+
+set PYTHONPATH=%ROOT%\apps\qgis\python;%PYTHONPATH%
+set PATH=%ROOT%\bin;%PATH%
+set PATH=%ROOT%\apps\qgis\bin;%PATH%
+set PYTHONPATH=%ROOT%\apps\qgis\python\plugins;%PYTHONPATH%
 set PYTHONPATH=%USERPROFILE%\.qgis2\python\plugins;%PYTHONPATH%
 set PYTHONPATH=./;%PYTHONPATH%
 set QGIS_PREFIX_PATH=%OSGEO4W_ROOT:\=/%/apps/qgis
@@ -58,7 +60,7 @@ if "%1" == "compile" (
 	echo.Compiling resources.
 	echo.------------------------------------------
 	rem for %%i in (%UI_FILES%) DO (
-	rem 	pyuic4 -o %%i.py %%i.ui
+	rem pyuic4 -o %%i.py %%i.ui
 	rem )
 	pyrcc4 -o resources\resources_rc.py resources\resources.qrc
 	goto end
