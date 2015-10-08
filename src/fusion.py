@@ -66,7 +66,7 @@ class Fusion(CustomMapTool):
             :rtype: bool
         '''
         
-        if layer and layer.type() == QgsMapLayer.VectorLayer and layer.featureCount() > 0:
+        if layer and layer.type() == QgsMapLayer.VectorLayer:
             return True
         return False
 
@@ -92,22 +92,21 @@ class Fusion(CustomMapTool):
         
     def canvasPressEvent(self, event):
         '''Override slot fired when mouse is pressed.'''
-        
         layer = self.canvas.currentLayer()
         
         # Begin an editing buffer that will let user to undo / redo action. 
         layer.beginEditCommand("Features fusion")
         
-        if not self.isLayerValid(layer) or event.button() != 1: # Do action only if layer is valid and left mouse button is used.
+        '''if not self.isLayerValid(layer) or event.button() != 1: # Do action only if layer is valid and left mouse button is used.
+            print 'cancel on press because layer non valid ? ' + str(not self.isLayerValid(layer))
             self.cancelAction()
-            return
+            return'''
         
         # Init move track object.
         self.createMoveTrack()
         
         # Convert clicked point in pixel coordinates to map coordinates point
         mapPoint = self.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
-        
         # Get if found a feature under the clicked point : it will be the reference feature for construct result feature.
         self.mergedFeature = self.getFirstIntersectedFeature(QgsGeometry.fromPoint(mapPoint), layer)
         
@@ -118,9 +117,7 @@ class Fusion(CustomMapTool):
         '''Override slot fired when mouse is moved.'''
         
         layer = self.canvas.currentLayer()
-        
         mapPoint = self.screenCoordsToMapPoint(event.pos().x(), event.pos().y())
-        
         if not self.mergedFeature: # If the previous hovered points was not into a feature. 
             self.mergedFeature = self.getFirstIntersectedFeature(QgsGeometry.fromPoint(mapPoint), layer)
         

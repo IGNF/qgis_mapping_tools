@@ -3,9 +3,9 @@
 REM save the path:
 if not exist tmp.txt echo %PATH%> tmp.txt
 
-set ROOT=C:\Program Files\QGIS WIEN
+set ROOT="C:\Program Files\QGIS WIEN"
 
-call %ROOT%\o4w_env.bat
+call %ROOT%\bin\o4w_env.bat
 
 set PYTHONPATH=%ROOT%\apps\qgis\python;%PYTHONPATH%
 set PATH=%ROOT%\bin;%PATH%
@@ -96,7 +96,7 @@ if "%1" == "test" (
 	echo.Launching tests.
 	echo.-----------------------------------
 	rem python test\src\UnitTestsMappingTools.py
-	call qgis --defaultui --code test\src\testMappingTools.py
+	call %ROOT%\bin\qgis-ltr.bat --defaultui --code test\src\testMappingTools.py
 	goto end
 )
 
