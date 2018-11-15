@@ -1,4 +1,5 @@
-from PyQt4.QtGui import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import QAction
 from qgis.utils import iface
 from qgis.gui import QgsMapTool
 
@@ -6,7 +7,7 @@ class CustomAction(QAction):
     """
     /***************************************************************************
      CustomAction Class
-            
+
             Class that inherits from QAction and contains common stuff to
             button actions developed for the plugin.
      ***************************************************************************/
@@ -26,7 +27,7 @@ class CustomAction(QAction):
         checkable=True):
         '''
         Constructor :
-            
+
         :param iconPath: Path to the icon for this action. Can be a resource
             path (e.g. ':/plugins/foo/bar.png') or a normal file system path.
         :type icon_path: str
@@ -73,44 +74,44 @@ class CustomAction(QAction):
         :type checkable: bool
         '''
         # Declare inheritance to QAction class.
-        super(QAction, self).__init__(QIcon(iconPath), text.decode('utf-8'), parent)
-        
+        super(QAction, self).__init__(QIcon(iconPath), text, parent)
+
         self.addToMenu = addToMenu
         self.addToToolbar = addToToolbar
         self.editModeOnly = editModeOnly
         self.mapTool = mapTool
         self.callback = callback
-        
+
         self.setEnabled(enabledFlag)
         self.setCheckable(checkable)
-        
+
         if statusTip:
             self.setStatusTip(statusTip)
 
         if whatsThis:
             self.setWhatsThis(whatsThis)
-        
+
         if self.mapTool and not isinstance(self.mapTool, QgsMapTool):
             raise ValueError('mapTool must be QgsMapTool instance')
-        
+
         # To retrieve previous state of QGIS toolbar when the action is deactivated.
         self.previousActivatedMapTool = None
-        
+
         self.triggered.connect(self.activateAction)
-        
+
         if editModeOnly:
             # Enable/disable action when editing mode is activated/deactivated
             iface.actionToggleEditing().triggered.connect(self.enableAction)
             # Check if new current layer is in editing mode
             iface.mapCanvas().currentLayerChanged.connect(self.enableActionAtCurrentLayerChange)
-    
+
     '''Getters'''
     def getMapTool(self):
         return self.mapTool
-    
+
     def getCallback(self):
         return self.callback
-    
+
     def isToAddToMenu(self):
         return self.addToMenu
 
@@ -123,14 +124,14 @@ class CustomAction(QAction):
 
     def enableAction(self, toEnable):
         '''Enable/disable action.
-        
+
             :param toEnable: True / False to enable / disable the action.
             :type toEnable: bool
-        
+
         '''
-        
+
         self.setEnabled(toEnable)
-        
+
         canvas = iface.mapCanvas()
         if toEnable:
             self.previousActivatedMapTool = canvas.mapTool()
@@ -138,12 +139,12 @@ class CustomAction(QAction):
             canvas.unsetMapTool(self.getMapTool())
             if self.previousActivatedMapTool:
                 canvas.setMapTool(self.previousActivatedMapTool)
-        
+
     def enableActionAtCurrentLayerChange(self):
-        '''Check if new current layer is in editing mode and apply corresponding 
+        '''Check if new current layer is in editing mode and apply corresponding
             action behavior.
         '''
-        
+
         if iface.mapCanvas().currentLayer():
             self.enableAction(iface.mapCanvas().currentLayer().isEditable())
         else:
@@ -155,5 +156,3 @@ class CustomAction(QAction):
             iface.mapCanvas().setMapTool(self.getMapTool())
         if self.getCallback():
             self.getCallback()()
-    
-            

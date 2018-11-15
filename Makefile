@@ -34,22 +34,23 @@ LOCALES =
 #LRELEASE = lrelease
 #LRELEASE = lrelease-qt4
 
-PLUGINNAME = MappingTools
+PLUGINNAME = MappingTools3
 
 PY_FILES = \
-	mapping_tools.py \
-	import_feature.py \
-	fusion.py \
-	common.py \
-	__init__.py
+	src/mapping_tools.py \
+	src/import_feature.py \
+	src/fusion.py \
+	src/custom_action.py \
+	src/custom_maptool.py \
+	src/__init__.py
 
-UI_FILES = 
+UI_FILES = sourcelayerselector.ui
 
-EXTRAS = fusion_icon.png import_feature_icon.png metadata.txt
+EXTRAS = img/fusion_icon.png img/import_feature_icon.png metadata.txt
 
-COMPILED_RESOURCE_FILES = resources_rc.py
+COMPILED_RESOURCE_FILES = resources.py sourcelayerselector.py
 
-PEP8EXCLUDE=pydev,resources_rc.py,conf.py,third_party,ui
+PEP8EXCLUDE=pydev,resources.py,conf.py,third_party,ui
 
 
 #################################################
@@ -60,37 +61,29 @@ HELP = help/build/html
 
 PLUGIN_UPLOAD = $(c)/plugin_upload.py
 
-RESOURCE_SRC=$(shell grep '^ *<file' resources.qrc | sed 's@</file>@@g;s/.*>//g' | tr '\n' ' ')
+RESOURCE_SRC=$(shell grep '^ *<file' resources/resources.qrc | sed 's@</file>@@g;s/.*>//g' | tr '\n' ' ')
 
-QGISDIR=.qgis2
+QGISDIR=.local/share/QGIS/QGIS3/profiles/default
 
 default: compile
 
 compile: $(COMPILED_RESOURCE_FILES)
 
-%_rc.py : %.qrc $(RESOURCES_SRC)
-	pyrcc4 -o $*_rc.py  $<
+%.py : %.qrc $(RESOURCES_SRC)
+	pyrcc5 -o $*.py $<
+
+%.py : %.ui $(RESOURCES_SRC)
+	pyuic5 -o $*.py $<
 
 %.qm : %.ts
 	$(LRELEASE) $<
 
-test: compile 
+test: deploy
 	@echo
 	@echo "----------------------"
 	@echo "Regression Test Suite"
 	@echo "----------------------"
-
-	@# Preceding dash means that make will continue in case of errors
-	@-export PYTHONPATH=`pwd`:$(PYTHONPATH); \
-		export QGIS_DEBUG=0; \
-		export QGIS_LOG_FILE=/dev/null; \
-		nosetests -v --with-id --with-coverage --cover-package=. \
-		3>&1 1>&2 2>&3 3>&- || true
-	@echo "----------------------"
-	@echo "If you get a 'no module named qgis.core error, try sourcing"
-	@echo "the helper script we have provided first then run make test."
-	@echo "e.g. source run-env-linux.sh <path to qgis install>; make test"
-	@echo "----------------------"
+	qgis --defaultui --code test/src/testMappingTools.py
 
 deploy: compile
 	@echo
@@ -102,7 +95,7 @@ deploy: compile
 	# $HOME/$(QGISDIR)/python/plugins
 	mkdir -p $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vf $(PY_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
-	#cp -vf $(UI_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
+	cp -vf $(UI_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vf $(COMPILED_RESOURCE_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vf $(EXTRAS) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	#cp -vfr i18n $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
@@ -178,6 +171,7 @@ clean:
 	@echo "Removing uic and rcc generated files"
 	@echo "------------------------------------"
 	#rm $(COMPILED_UI_FILES) $(COMPILED_RESOURCE_FILES)
+	rm resources.py
 	rm  *.pyc test/src/*.pyc
 
 

@@ -1,7 +1,8 @@
 
-from PyQt4.QtGui import QMessageBox, QPixmap, QColor, QGraphicsScene
+from qgis.PyQt.QtWidgets import QMessageBox, QGraphicsScene
+from qgis.PyQt.QtGui import QPixmap, QColor
 from qgis.gui import QgsMapCanvas, QgsMapTool, QgsRubberBand
-from qgis.core import QgsGeometry, QgsPoint, QgsSpatialIndex, QgsFeatureRequest, QgsMapLayer, QgsMapLayerRegistry
+from qgis.core import QgsGeometry, QgsPoint, QgsSpatialIndex, QgsFeatureRequest, QgsMapLayer, QgsProject
 
 class CustomMapTool(QgsMapTool):
     """
@@ -36,7 +37,7 @@ class CustomMapTool(QgsMapTool):
         if self.canvas.currentLayer() and self.canvas.currentLayer().type() == QgsMapLayer.VectorLayer and self.canvas.currentLayer().featureCount() > 0:
             self.setSpatialIndexToLayer(self.canvas.currentLayer())
         self.canvas.currentLayerChanged.connect(self.setSpatialIndexToLayer)
-        QgsMapLayerRegistry.instance().layerWillBeRemoved.connect(self.removeSpatialIndexFromLayerId)
+        QgsProject.instance().layerWillBeRemoved.connect(self.removeSpatialIndexFromLayerId)
 
     def deactivateMapTool(self):
         '''Stuff to do when tool is activated.'''
@@ -44,7 +45,7 @@ class CustomMapTool(QgsMapTool):
         # Disconnect signals if connected.
         try:
             self.canvas.currentLayerChanged.disconnect(self.setSpatialIndexToLayer)
-            QgsMapLayerRegistry.instance().layerWillBeRemoved.disconnect(self.removeSpatialIndexFromLayerId)
+            QgsProject.instance().layerWillBeRemoved.disconnect(self.removeSpatialIndexFromLayerId)
         except:
             pass
 
@@ -86,7 +87,7 @@ class CustomMapTool(QgsMapTool):
             :rtype: QgsVectorLayer or None
         '''
 
-        for key, value in self.indexCatalog.iteritems():
+        for key, value in self.indexCatalog.items():
             if value == spatialIndex:
                 return key
         return None
@@ -271,7 +272,7 @@ class CustomMapTool(QgsMapTool):
             spatialIndex = self.getSpatialIndexByLayer(layer)
             featureToAdd = self.getFeatureById(layer, featureToAddId)
             if featureToAdd and spatialIndex:
-                spatialIndex.insertFeature({featureToAddId: featureToAdd}.values()[0])
+                spatialIndex.insertFeature(list({featureToAddId: featureToAdd}.values())[0])
 
     def deleteFeatureFromSpatialIndex(self, featureToDeleteId):
         '''Update spatial index when feature is deleted.
@@ -319,7 +320,7 @@ class CustomMapTool(QgsMapTool):
             :rtype: QgsRubberBand
         '''
 
-        for sceneItem in self.canvas.scene().items():
+        for sceneItem in list(self.canvas.scene().items()):
             if isinstance(sceneItem, QgsRubberBand):
                 return sceneItem
         return None
@@ -366,4 +367,3 @@ class CustomMapTool(QgsMapTool):
         if self.isMoveTrackValid():
             return self.getMoveTrack().asGeometry().contains(pos)
         return False"""
-    
