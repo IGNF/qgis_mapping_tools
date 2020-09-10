@@ -1,28 +1,20 @@
-sudo -E add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+# Description
 
-sudo apt-get update
+Plugin QGIS permettant l'édition de couches de polygones avec une ergonomie simplifiée.
 
-sudo apt-get install qgis
+# Installation
 
-* QGIS > 3.0 nécessaire
+## Linux
 
-#### Installation
-* installer pyQT5 (pyqt5-dev-tools sous linux)
-* installer le module pyuserinput avec pip3 (utile pour le test d'intégration)
-    * **Windows:**
-        * télécharger get-pip.py (https://bootstrap.pypa.io/get-pip.py)
-        * ajouter au path {python_dir}/Scripts/pip.exe
-        * l'exécuter (set HTTPS_PROXY si besoin)
-        * cmd 'pip install PyUserInput'
-* cmd 'make test' pour lancer un test de non regression
+Pour déployer l'extension dans le répertoire des plugins de QGIS (installation de QGIS requise).
 
-#### Environnement de dev
-* Plugin eclipse 'pydev' : http://pydev.org/updates
+```make deploy```
 
-#### Gestion des mises à jour dans le repository
-Lorsqu'une release est prête:
+Pour générer un zip déployable 
 
-* Modifier la version dans metadata.txt
-* Générer MappingTools3.zip dans le répertoire de dépôt avec la commande 'make zip'
-* Remplacer MappingTools3.zip dans le repository par celui généré précédamment
-* Modifier la version dans le fichier MappingTools3.xml du repository publie la mise à jour. Renseigner dans ce même fichier les infos de mise à jour.
+```make zip```
+
+## Windows
+
+Le script make.bat a été conçu pour traiter les mêmes opération que le Makefile
+
