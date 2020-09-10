@@ -18,3 +18,9 @@ Pour générer un zip déployable
 
 Le script make.bat a été conçu pour traiter les mêmes opération que le Makefile
 
+# Dépendances pour la compilation
+
+* python3
+* pyqgis3
+* pyqt5
+
